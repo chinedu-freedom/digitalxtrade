@@ -137,11 +137,11 @@ export default function AboutPage() {
       </section>
 
       {/* CORE ABOUT SECTIONS */}
+      <AboutCertificateSection />
       <AboutStorySection />
       <AboutTimelineAndFiguresSection />
       <AboutManagementSection />
       <AboutAwardsListSection />
-      <AboutCertificateSection />
 
       <FloatingWidgets />
       <Footer />
