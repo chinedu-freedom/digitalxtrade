@@ -4,15 +4,11 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import HeaderNav from '@/components/HeaderNav';
-import AboutFeaturesSection from '@/components/AboutFeaturesSection';
 import AboutStorySection from '@/components/AboutStorySection';
 import AboutTimelineAndFiguresSection from '@/components/AboutTimelineAndFiguresSection';
 import AboutManagementSection from '@/components/AboutManagementSection';
 import AboutAwardsListSection from '@/components/AboutAwardsListSection';
 import AboutCertificateSection from '@/components/AboutCertificateSection';
-import WhyChooseSection from '@/components/WhyChooseSection';
-import WorldOfInvestmentsSection from '@/components/WorldOfInvestmentsSection';
-import StartTradingSection from '@/components/StartTradingSection';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 import { Layers, PieChart, Landmark, Award, ChevronRight } from 'lucide-react';
@@ -140,21 +136,16 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ALTERNATING ABOUT FEATURE CARDS */}
-      <AboutFeaturesSection />
+      {/* CORE ABOUT SECTIONS */}
       <AboutStorySection />
       <AboutTimelineAndFiguresSection />
       <AboutManagementSection />
       <AboutAwardsListSection />
       <AboutCertificateSection />
 
-      {/* CONTINUATION SECTIONS */}
-      <WhyChooseSection />
-      <WorldOfInvestmentsSection />
-      <StartTradingSection />
-
       <FloatingWidgets />
       <Footer />
     </main>
   );
 }
+
