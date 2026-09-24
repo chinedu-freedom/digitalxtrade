@@ -38,7 +38,7 @@ export default function SupportPage() {
       {/* HERO BANNER SECTION */}
       <section className="relative w-full h-[380px] md:h-[440px] bg-slate-900 overflow-hidden">
         <Image
-          src="/images/client-support.jpg"
+          src="/images/support-hero-banner.jpg"
           alt="We have the answer you need"
           fill
           priority
@@ -58,7 +58,7 @@ export default function SupportPage() {
           <div>
             <Link
               href="/register"
-              className="inline-block bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold px-8 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-lg"
+              className="inline-block bg-[#0085d0] hover:bg-[#0072ce] text-white font-extrabold px-16 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-lg text-center min-w-[280px] md:min-w-[320px]"
             >
               OPEN ACCOUNT
             </Link>
@@ -128,14 +128,14 @@ export default function SupportPage() {
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-white border border-slate-300 rounded px-4 py-2.5 text-sm focus:outline-none focus:border-[#0085d0] transition-colors resize-y"
+                  className="w-full bg-white border border-slate-300 rounded px-4 py-2.5 text-sm focus:outline-none focus:border-[#0085d0] transition-colors resize-none"
                 />
               </div>
 
               <div className="text-center pt-2">
                 <button
                   type="submit"
-                  className="bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold px-12 py-3 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-md"
+                  className="bg-[#0085d0] hover:bg-[#0072ce] text-white font-extrabold px-20 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-md min-w-[280px] md:min-w-[320px]"
                 >
                   SEND
                 </button>
