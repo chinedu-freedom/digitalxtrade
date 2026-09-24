@@ -116,10 +116,7 @@ function VerifyOtpContent() {
                       }`}
                     />
                   ))}
-                </div>
-                {errors.otp && (
-                  <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.otp}</p>
-                )}
+                </div>  
               </div>
 
               {/* Submit Button */}
