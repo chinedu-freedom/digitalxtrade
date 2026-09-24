@@ -71,12 +71,12 @@ export const AuthProvider = ({ children }) => {
         toast.success('Welcome back!');
         return { success: true, user: res.data.user };
       } else {
-        const msg = res.data.message || 'Invalid email or password';
+        const msg = res.data.message || 'Invalid username or password';
         toast.error(msg);
         return { success: false, message: msg };
       }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Invalid email or password';
+      const msg = err.response?.data?.message || 'Invalid username or password';
       toast.error(msg);
       return { success: false, message: msg };
     }
