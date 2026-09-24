@@ -56,12 +56,21 @@ export default function DashboardPage() {
             { label: 'TRANSACTIONS', path: '/dashboard/transactions' },
             { label: 'REFERRALS', path: '/dashboard/referrals' },
             { label: 'SETTINGS', path: '/dashboard/settings' },
+            { label: 'LOGOUT', action: logout },
           ].map((item) => (
             <button
               key={item.label}
-              onClick={() => setActiveTab(item.label)}
+              onClick={() => {
+                if (item.action) {
+                  item.action();
+                } else {
+                  setActiveTab(item.label);
+                }
+              }}
               className={`text-xs sm:text-sm font-black tracking-wider uppercase whitespace-nowrap transition-colors cursor-pointer ${
-                activeTab === item.label
+                item.label === 'LOGOUT'
+                  ? 'text-slate-700 hover:text-red-600 ml-auto'
+                  : activeTab === item.label
                   ? 'text-[#0085d0] border-b-2 border-[#0085d0] pb-1'
                   : 'text-slate-700 hover:text-[#0085d0]'
               }`}
@@ -69,12 +78,6 @@ export default function DashboardPage() {
               {item.label}
             </button>
           ))}
-          <button
-            onClick={logout}
-            className="text-xs sm:text-sm font-black tracking-wider uppercase whitespace-nowrap text-slate-700 hover:text-red-600 transition-colors cursor-pointer ml-auto"
-          >
-            LOGOUT
-          </button>
         </div>
       </div>
 

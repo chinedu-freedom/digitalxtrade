@@ -174,9 +174,7 @@ export const AuthProvider = ({ children }) => {
     }
     setUser(null);
     toast.info('Logged out successfully');
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
+    router.push('/login');
   };
 
   return (
