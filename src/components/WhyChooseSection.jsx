@@ -1,80 +1,97 @@
 'use client';
 
 import React from 'react';
-import { Award, Layers, ShieldCheck, Trophy } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 
 export default function WhyChooseSection() {
-  const items = [
-    {
-      title: 'YEARS OF EXPERIENCE',
-      description: 'Online trading pioneer since 1999, we now process over 30mn orders annually.',
-      icon: (
-        <div className="w-14 h-14 rounded-full border-2 border-white/80 flex items-center justify-center shrink-0 relative bg-white/5">
-          <Award className="w-7 h-7 text-amber-400 stroke-[1.5]" />
-        </div>
-      )
-    },
-    {
-      title: 'LISTED COMPANY',
-      description: "One of Europe's largest platforms, listed and part of Euro Stoxx 600.",
-      icon: (
-        <div className="w-14 h-14 rounded-full border-2 border-white/80 flex items-center justify-center shrink-0 relative bg-white/5">
-          <Layers className="w-7 h-7 text-amber-400 stroke-[1.5]" />
-        </div>
-      )
-    },
-    {
-      title: 'ONE-STOP SOLUTION',
-      description: 'A combination of brokerage and investment services, all via one single platform account.',
-      icon: (
-        <div className="w-14 h-14 rounded-full border-2 border-white/80 flex items-center justify-center shrink-0 relative bg-white/5">
-          <ShieldCheck className="w-7 h-7 text-amber-400 stroke-[1.5]" />
-        </div>
-      )
-    },
-    {
-      title: 'A GLOBAL AWARD-WINNER',
-      description: 'Recognised and awarded for best platform, provider and live trading events of the year.',
-      icon: (
-        <div className="w-14 h-14 rounded-full border-2 border-white/80 flex items-center justify-center shrink-0 relative bg-white/5">
-          <Trophy className="w-7 h-7 text-amber-400 stroke-[1.5]" />
-        </div>
-      )
-    }
-  ];
-
   return (
-    <section className="bg-[#0055a5] text-white py-20 font-sans">
-      <div className="max-w-[1400px] mx-auto px-6 sm:px-12 lg:px-16 space-y-14 text-center">
+    <section className="bg-[#00529b] text-white py-16 px-6 md:px-12 font-sans">
+      <div className="max-w-6xl mx-auto text-center space-y-12">
         
-        {/* Title & Subtitle */}
-        <div className="space-y-4 max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight uppercase">
-            WHY CHOOSE <span className="text-[#ffd700]">DIGITALXTRADE.VIP</span>?
+        {/* Header Title & Subtitle */}
+        <div className="space-y-3 max-w-3xl mx-auto">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight uppercase">
+            WHY CHOOSE <span className="text-[#ffd700]">DIGITALXTRADE.COM</span>?
           </h2>
-          <p className="text-blue-100 text-sm sm:text-base font-medium leading-relaxed max-w-2xl mx-auto">
-            digitalxtrade.com is one of Europe's leading FinTech platform with over 1.3 million clients and £82.4 billion in total financial assets.
+          <p className="text-blue-100 text-xs md:text-sm font-medium leading-relaxed max-w-2xl mx-auto">
+            Online trading pioneer since 1999, we have processed +33.4 million orders in 2020 and we are part of the EuroStoxx 600 Index.
           </p>
         </div>
 
-        {/* 2x2 Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 max-w-5xl mx-auto text-left pt-4">
-          {items.map((item, idx) => (
-            <div key={idx} className="flex items-start gap-6">
-              {item.icon}
-              <div className="space-y-2">
-                <h3 className="text-base font-black tracking-wide text-white uppercase">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-blue-100 font-medium leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
+        {/* 3 Columns Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 max-w-5xl mx-auto text-center pt-2">
+          
+          {/* Column 1: CONVENIENT PRICING */}
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-16 h-16 relative flex items-center justify-center mb-1">
+              <svg className="w-14 h-14" viewBox="0 0 48 48" fill="none">
+                <circle cx="22" cy="22" r="14" stroke="#ffffff" strokeWidth="2" />
+                <path d="M32 32L40 40" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
+                <path d="M22 8C27 8 32 12 32 17" stroke="#ffd700" strokeWidth="2" strokeLinecap="round" />
+              </svg>
             </div>
-          ))}
+            <h3 className="text-sm md:text-base font-extrabold text-white uppercase tracking-wide">
+              CONVENIENT PRICING
+            </h3>
+            <p className="text-xs md:text-sm text-blue-100 leading-relaxed font-normal max-w-xs">
+              One of the most convenient pricing on the the market. Starting from &pound;0 on FTSE100, US and EU Shares CFDs without additional markup.
+            </p>
+          </div>
+
+          {/* Column 2: LISTED COMPANY */}
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-16 h-16 relative flex items-center justify-center mb-1">
+              <svg className="w-14 h-14" viewBox="0 0 48 48" fill="none">
+                <path d="M24 6L38 12V24C38 33 32 40 24 44C16 40 10 33 10 24V12L24 6Z" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round" />
+                <path d="M18 24L22 28L30 18" stroke="#ffd700" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h3 className="text-sm md:text-base font-extrabold text-white uppercase tracking-wide">
+              LISTED COMPANY
+            </h3>
+            <p className="text-xs md:text-sm text-blue-100 leading-relaxed font-normal max-w-xs">
+              One of Europe's largest banks, listed and part of Euro Stoxx 600, with &pound;82.4 billion in total financial assets.
+            </p>
+          </div>
+
+          {/* Column 3: A GLOBAL AWARD-WINNER */}
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-16 h-16 relative flex items-center justify-center mb-1">
+              <svg className="w-14 h-14 overflow-visible" viewBox="0 0 24 24" fill="none">
+                <defs>
+                  <clipPath id="top-half-clip-why">
+                    <rect x="0" y="0" width="24" height="11" />
+                  </clipPath>
+                </defs>
+                <path
+                  d="M12 2L14.8 8.5H21.5L16 12.8L18.2 19.5L12 15.2L5.8 19.5L8 12.8L2.5 8.5H9.2L12 2Z"
+                  stroke="#ffffff"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 2L14.8 8.5H21.5L16 12.8L18.2 19.5L12 15.2L5.8 19.5L8 12.8L2.5 8.5H9.2L12 2Z"
+                  stroke="#ffd700"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  clipPath="url(#top-half-clip-why)"
+                />
+              </svg>
+            </div>
+            <h3 className="text-sm md:text-base font-extrabold text-white uppercase tracking-wide">
+              A GLOBAL AWARD-WINNER
+            </h3>
+            <p className="text-xs md:text-sm text-blue-100 leading-relaxed font-normal max-w-xs">
+              Awarded for Best Broker for Global Trading 2021 by ADVFN International Financial Awards and Best trading Platform 2020 by London Forex Show.
+            </p>
+          </div>
+
         </div>
 
       </div>
     </section>
   );
 }
+

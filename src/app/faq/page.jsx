@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import HeaderNav from '@/components/HeaderNav';
+import WhyChooseSection from '@/components/WhyChooseSection';
+import StartTradingSection from '@/components/StartTradingSection';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 import { ChevronRight, ChevronDown, Search } from 'lucide-react';
@@ -200,6 +202,9 @@ export default function FaqPage() {
           )}
         </div>
       </section>
+
+      <WhyChooseSection />
+      <StartTradingSection />
 
       <FloatingWidgets />
       <Footer />
