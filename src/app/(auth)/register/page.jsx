@@ -122,10 +122,9 @@ export default function RegisterPage() {
       toast.success('Payment account details saved!');
       setTimeout(() => {
         router.push('/dashboard');
-      }, 500);
+      }, 600);
     } catch (err) {
       toast.error('Failed to save payment processors');
-    } finally {
       setSavingPayment(false);
     }
   };
