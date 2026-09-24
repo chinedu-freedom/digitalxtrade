@@ -46,38 +46,41 @@ export default function DashboardPage() {
       <HeaderNav />
 
       {/* Secondary Dashboard Sub-Navigation Bar */}
-      <div className="bg-white border-b border-gray-200 shadow-2xs sticky top-20 z-40">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-start overflow-x-auto no-scrollbar py-3 gap-6 sm:gap-8">
-          {[
-            { label: 'ACCOUNT', path: '/dashboard' },
-            { label: 'MAKE DEPOSIT', path: '/dashboard/deposit' },
-            { label: 'WITHDRAW FUNDS', path: '/dashboard/withdraw' },
-            { label: 'DEPOSITS LIST', path: '/dashboard/deposits' },
-            { label: 'TRANSACTIONS', path: '/dashboard/transactions' },
-            { label: 'REFERRALS', path: '/dashboard/referrals' },
-            { label: 'SETTINGS', path: '/dashboard/settings' },
-            { label: 'LOGOUT', action: logout },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={() => {
-                if (item.action) {
-                  item.action();
-                } else {
-                  setActiveTab(item.label);
-                }
-              }}
-              className={`text-xs sm:text-sm font-black tracking-wider uppercase whitespace-nowrap transition-colors cursor-pointer ${
-                item.label === 'LOGOUT'
-                  ? 'text-slate-700 hover:text-red-600 ml-auto'
-                  : activeTab === item.label
-                  ? 'text-[#0085d0] border-b-2 border-[#0085d0] pb-1'
-                  : 'text-slate-700 hover:text-[#0085d0]'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+      <div className="w-full bg-white border-b border-gray-200 shadow-2xs sticky top-20 z-40">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-center overflow-x-auto no-scrollbar py-3">
+          <div className="flex items-center justify-center gap-6 sm:gap-8 shrink-0">
+            {[
+              { label: 'ACCOUNT', path: '/dashboard' },
+              { label: 'MAKE DEPOSIT', path: '/dashboard/deposit' },
+              { label: 'WITHDRAW FUNDS', path: '/dashboard/withdraw' },
+              { label: 'DEPOSITS LIST', path: '/dashboard/deposits' },
+              { label: 'TRANSACTIONS', path: '/dashboard/transactions' },
+              { label: 'REFERRALS', path: '/dashboard/referrals' },
+              { label: 'SETTINGS', path: '/dashboard/settings' },
+              { label: 'LOGOUT', action: logout },
+            ].map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  if (item.action) {
+                    item.action();
+                  } else {
+                    setActiveTab(item.label);
+                  }
+                }}
+                className={`text-xs sm:text-sm font-black tracking-wider uppercase whitespace-nowrap transition-colors cursor-pointer ${
+                  activeTab === item.label
+                    ? 'text-[#0085d0] border-b-2 border-[#0085d0] pb-1'
+                    : item.label === 'LOGOUT'
+                    ? 'text-slate-700 hover:text-red-600'
+                    : 'text-slate-700 hover:text-[#0085d0]'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
