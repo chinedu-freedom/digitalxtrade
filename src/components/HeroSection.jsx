@@ -30,6 +30,15 @@ export default function HeroSection() {
           <p className="text-slate-700 text-lg md:text-xl font-medium max-w-lg leading-relaxed pt-2">
             Discover a premium trading experience based on awarded platforms.
           </p>
+
+          <div className="pt-2">
+            <Link
+              href="/register"
+              className="inline-block bg-[#0085d0] hover:bg-[#0072ce] text-white font-extrabold px-16 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-lg text-center min-w-[280px] md:min-w-[320px]"
+            >
+              OPEN ACCOUNT
+            </Link>
+          </div>
         </div>
       </div>
     </section>

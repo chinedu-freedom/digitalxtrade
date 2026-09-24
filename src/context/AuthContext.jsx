@@ -1,0 +1,201 @@
+'use client';
+
+import { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import api from '../lib/api';
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const fetchUser = async () => {
+    try {
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('impersonate_token') || urlParams.get('token') || urlParams.get('sec-prd-token');
+        if (urlToken) {
+          localStorage.setItem('stakelab_token', urlToken);
+          const isLocal = window.location.hostname.includes('localhost');
+          document.cookie = `stakelab_token=${urlToken}; path=/; max-age=604800; SameSite=Lax${!isLocal ? '; domain=.everstake.cx; Secure' : ''}`;
+          document.cookie = `sec-prd-token=${urlToken}; path=/; max-age=604800; SameSite=Lax${!isLocal ? '; domain=.everstake.cx; Secure' : ''}`;
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, '', cleanUrl);
+        }
+      }
+
+      const token = localStorage.getItem('stakelab_token');
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      const isLocal = typeof window !== 'undefined' && window.location.hostname.includes('localhost');
+      document.cookie = `stakelab_token=${token}; path=/; max-age=604800; SameSite=Lax${!isLocal ? '; domain=.everstake.cx; Secure' : ''}`;
+      document.cookie = `sec-prd-token=${token}; path=/; max-age=604800; SameSite=Lax${!isLocal ? '; domain=.everstake.cx; Secure' : ''}`;
+      const res = await api.get('/auth/me');
+      if (res.data.success) {
+        setUser(res.data.user);
+      }
+    } catch (err) {
+      localStorage.removeItem('stakelab_token');
+      document.cookie = 'stakelab_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'sec-prd-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const login = async (usernameOrEmail, password, remember = false) => {
+    try {
+      const res = await api.post('/auth/login', {
+        username: usernameOrEmail,
+        email: usernameOrEmail,
+        password,
+        remember_me: Boolean(remember)
+      });
+      if (res.data.success) {
+        const maxAge = remember ? 86400 : 3600;
+        localStorage.setItem('stakelab_token', res.data.token);
+        document.cookie = `stakelab_token=${res.data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        document.cookie = `sec-prd-token=${res.data.token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        setUser(res.data.user);
+        toast.success('Welcome back!');
+        return { success: true, user: res.data.user };
+      } else {
+        const msg = res.data.message || 'Invalid email or password';
+        toast.error(msg);
+        return { success: false, message: msg };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Invalid email or password';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  };
+
+  const register = async (formData) => {
+    try {
+      const res = await api.post('/auth/register', formData);
+      if (res.data.success) {
+        localStorage.setItem('stakelab_token', res.data.token);
+        document.cookie = `stakelab_token=${res.data.token}; path=/; max-age=604800; SameSite=Lax`;
+        document.cookie = `sec-prd-token=${res.data.token}; path=/; max-age=604800; SameSite=Lax`;
+        setUser(res.data.user);
+        toast.success('Registration successful');
+        return { success: true, user: res.data.user };
+      } else {
+        const msg = res.data.message || 'Registration failed';
+        toast.error(msg);
+        return { success: false, message: msg };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Registration failed';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  };
+
+  const requestPasswordReset = async (email) => {
+    try {
+      const res = await api.post('/auth/forgot-password', { email });
+      if (res.data.success) {
+        toast.success(res.data.message || 'OTP code sent to your email!');
+        return { success: true, message: res.data.message };
+      } else {
+        const msg = res.data.message || 'Failed to send OTP code';
+        toast.error(msg);
+        return { success: false, message: msg };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to send OTP code';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  };
+
+  const verifyOtp = async (email, otp) => {
+    try {
+      const res = await api.post('/auth/verify-otp', { email, otp });
+      if (res.data.success) {
+        toast.success(res.data.message || 'OTP verified successfully!');
+        return { success: true, message: res.data.message };
+      } else {
+        const msg = res.data.message || 'Invalid or expired OTP code';
+        toast.error(msg);
+        return { success: false, message: msg };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Invalid or expired OTP code';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  };
+
+  const resetPassword = async (email, password) => {
+    try {
+      const res = await api.post('/auth/reset-password', { email, password });
+      if (res.data.success) {
+        toast.success(res.data.message || 'Password reset successfully! Please login.');
+        return { success: true, message: res.data.message };
+      } else {
+        const msg = res.data.message || 'Failed to reset password';
+        toast.error(msg);
+        return { success: false, message: msg };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to reset password';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  };
+
+  const logout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('stakelab_token');
+      localStorage.removeItem('impersonate_token');
+      localStorage.removeItem('sec-prd-token');
+
+      const isLocal = window.location.hostname.includes('localhost');
+      const domainAttr = !isLocal ? '; domain=.everstake.cx' : '';
+
+      document.cookie = `stakelab_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainAttr}`;
+      document.cookie = `sec-prd-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainAttr}`;
+      document.cookie = 'stakelab_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'sec-prd-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
+    setUser(null);
+    toast.info('Logged out successfully');
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        requestPasswordReset,
+        verifyOtp,
+        resetPassword,
+        logout,
+        refreshUser: fetchUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);

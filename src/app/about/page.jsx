@@ -57,7 +57,7 @@ export default function AboutPage() {
           <div>
             <Link
               href="/register"
-              className="inline-block bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold px-8 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-lg"
+              className="inline-block bg-[#0085d0] hover:bg-[#0072ce] text-white font-extrabold px-16 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-lg text-center min-w-[280px] md:min-w-[320px]"
             >
               OPEN ACCOUNT
             </Link>

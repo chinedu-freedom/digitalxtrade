@@ -1,0 +1,197 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../context/AuthContext';
+import HeaderNav from '../../components/HeaderNav';
+import Footer from '../../components/Footer';
+import PageLoader from '../../components/PageLoader';
+
+export default function DashboardPage() {
+  const router = useRouter();
+  const { user, loading, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('ACCOUNT');
+  const [lastAccessTime, setLastAccessTime] = useState('');
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
+    const now = new Date();
+    const formatted = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) +
+      ' ' +
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    setLastAccessTime(formatted);
+  }, []);
+
+  if (loading || !user) {
+    return <PageLoader />;
+  }
+
+  const username = user?.username || user?.fullName || 'Spark';
+  const referralLink = `https://digitalxtrade.vip/?ref=${username}`;
+
+  // Formatted registration date
+  const regDateFormatted = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+    : 'Sep-24-2026';
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f4f7f9] text-slate-800 font-sans">
+      {/* Primary Header Navigation Bar */}
+      <HeaderNav />
+
+      {/* Secondary Dashboard Sub-Navigation Bar */}
+      <div className="bg-white border-b border-gray-200 shadow-2xs sticky top-20 z-40">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-start overflow-x-auto no-scrollbar py-3 gap-6 sm:gap-8">
+          {[
+            { label: 'ACCOUNT', path: '/dashboard' },
+            { label: 'MAKE DEPOSIT', path: '/dashboard/deposit' },
+            { label: 'WITHDRAW FUNDS', path: '/dashboard/withdraw' },
+            { label: 'DEPOSITS LIST', path: '/dashboard/deposits' },
+            { label: 'TRANSACTIONS', path: '/dashboard/transactions' },
+            { label: 'REFERRALS', path: '/dashboard/referrals' },
+            { label: 'SETTINGS', path: '/dashboard/settings' },
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={() => setActiveTab(item.label)}
+              className={`text-xs sm:text-sm font-black tracking-wider uppercase whitespace-nowrap transition-colors cursor-pointer ${
+                activeTab === item.label
+                  ? 'text-[#0085d0] border-b-2 border-[#0085d0] pb-1'
+                  : 'text-slate-700 hover:text-[#0085d0]'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+          <button
+            onClick={logout}
+            className="text-xs sm:text-sm font-black tracking-wider uppercase whitespace-nowrap text-slate-700 hover:text-red-600 transition-colors cursor-pointer ml-auto"
+          >
+            LOGOUT
+          </button>
+        </div>
+      </div>
+
+      {/* Main Dashboard Workspace Content */}
+      <main className="flex-1 max-w-[1300px] w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+        
+        {/* Welcome & Balance Hero Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sm:p-10 relative overflow-hidden">
+          <div className="max-w-xl space-y-5">
+            <h2 className="text-slate-600 text-base font-normal">
+              Welcome, <span className="font-semibold text-slate-900">{username}</span>
+            </h2>
+            
+            <div className="text-4xl sm:text-5xl font-extrabold text-[#0085d0] tracking-tight">
+              Balance <span className="text-[#0085d0] font-black">${user.balance || 0}</span>
+            </div>
+
+            <div className="space-y-1.5 text-xs sm:text-sm text-slate-600 pt-2 font-medium">
+              <div className="flex items-center gap-2">
+                <span className="text-[#0085d0] font-bold">&gt;</span>
+                <span>Registration date: <strong className="text-slate-900 font-bold">{regDateFormatted}</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#0085d0] font-bold">&gt;</span>
+                <span>Last Access: <strong className="text-slate-900 font-bold">{lastAccessTime || 'Sep-24-2026 12:47:44 PM'}</strong></span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-4 flex flex-wrap items-center gap-4">
+              <button
+                onClick={() => setActiveTab('MAKE DEPOSIT')}
+                className="border-2 border-[#0085d0] text-[#0085d0] hover:bg-[#0085d0] hover:text-white transition-all px-8 py-3 rounded text-xs font-black tracking-wider uppercase shadow-xs cursor-pointer"
+              >
+                MAKE DEPOSIT
+              </button>
+              <button
+                onClick={() => setActiveTab('WITHDRAW FUNDS')}
+                className="border-2 border-[#0085d0] text-[#0085d0] hover:bg-[#0085d0] hover:text-white transition-all px-8 py-3 rounded text-xs font-black tracking-wider uppercase shadow-xs cursor-pointer"
+              >
+                WITHDRAW FUNDS
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Referral Link Box */}
+        <div className="bg-[#eaf4fb] border border-[#b3d7f0] rounded-md p-5 sm:p-6 space-y-2">
+          <h3 className="text-sm font-bold text-slate-800">
+            Referral link
+          </h3>
+          <div className="text-xs sm:text-sm text-slate-700 font-medium break-all select-all">
+            {referralLink}
+          </div>
+        </div>
+
+        {/* Statistics Two-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Deposit Statistics Card */}
+          <div className="bg-white rounded-md border border-gray-200 shadow-2xs overflow-hidden">
+            <div className="bg-gray-50 border-b border-gray-200 px-5 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
+              Deposit statistics
+            </div>
+            <div className="divide-y divide-gray-100 text-xs sm:text-sm">
+              <div className="flex items-center justify-between px-5 py-3.5">
+                <span className="text-slate-600 font-medium">Earned Total</span>
+                <span className="text-slate-900 font-black text-base">$0.00</span>
+              </div>
+              <div className="flex items-center justify-between px-5 py-3.5">
+                <span className="text-slate-600 font-medium">Total Deposit</span>
+                <span className="text-slate-900 font-black text-base">$0.00</span>
+              </div>
+              <div className="flex items-center justify-between px-5 py-3.5">
+                <span className="text-slate-600 font-medium">Last Deposit</span>
+                <span className="text-slate-900 font-black text-base">$</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Withdrawal Statistics Card */}
+          <div className="bg-white rounded-md border border-gray-200 shadow-2xs overflow-hidden">
+            <div className="bg-gray-50 border-b border-gray-200 px-5 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
+              Withdrawal statistics
+            </div>
+            <div className="divide-y divide-gray-100 text-xs sm:text-sm">
+              <div className="flex items-center justify-between px-5 py-3.5">
+                <span className="text-slate-600 font-medium">Pending Withdrawal</span>
+                <span className="text-slate-900 font-black text-base">$0.00</span>
+              </div>
+              <div className="flex items-center justify-between px-5 py-3.5">
+                <span className="text-slate-600 font-medium">Withdrew Total</span>
+                <span className="text-slate-900 font-black text-base">$0.00</span>
+              </div>
+              <div className="flex items-center justify-between px-5 py-3.5">
+                <span className="text-slate-600 font-medium">Last Withdrawal</span>
+                <span className="text-slate-900 font-black text-base">$</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Financial Statistics Section */}
+        <div className="pt-4">
+          <h3 className="text-xl font-bold text-slate-800 mb-4">
+            Financial statistics
+          </h3>
+          <div className="bg-white rounded-md border border-gray-200 p-8 text-center text-slate-500 text-xs sm:text-sm font-medium">
+            No financial transactions recorded yet.
+          </div>
+        </div>
+
+      </main>
+
+      {/* Main Site Footer */}
+      <Footer />
+    </div>
+  );
+}

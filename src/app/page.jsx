@@ -13,6 +13,7 @@ import ProfessionalToolsSection from '@/components/ProfessionalToolsSection';
 import ConversionFeesSection from '@/components/ConversionFeesSection';
 import EfficientSupportSection from '@/components/EfficientSupportSection';
 import WhyChooseSection from '@/components/WhyChooseSection';
+import BroadenTradingSection from '@/components/BroadenTradingSection';
 import WorldOfInvestmentsSection from '@/components/WorldOfInvestmentsSection';
 import StartTradingSection from '@/components/StartTradingSection';
 import TradingViewNewsWidget from '@/components/TradingViewNewsWidget';
@@ -57,6 +58,7 @@ export default function UserHomePage() {
 
       {/* Why Choose DigitalXTrade Banner Section */}
       <WhyChooseSection />
+      <BroadenTradingSection />
       <WorldOfInvestmentsSection />
       <StartTradingSection />
       <TradingViewNewsWidget />
