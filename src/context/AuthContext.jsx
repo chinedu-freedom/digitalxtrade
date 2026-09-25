@@ -188,6 +188,7 @@ export const AuthProvider = ({ children }) => {
         verifyOtp,
         resetPassword,
         logout,
+        fetchUser,
         refreshUser: fetchUser,
       }}
     >

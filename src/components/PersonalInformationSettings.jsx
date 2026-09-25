@@ -6,7 +6,7 @@ import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function PersonalInformationSettings() {
-  const { user, fetchUser } = useAuth();
+  const { user, fetchUser, refreshUser } = useAuth();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -20,6 +20,11 @@ export default function PersonalInformationSettings() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const loader = fetchUser || refreshUser;
+    if (loader) loader();
+  }, []);
 
   useEffect(() => {
     if (user) {
