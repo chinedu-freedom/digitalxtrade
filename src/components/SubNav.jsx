@@ -13,7 +13,7 @@ export default function SubNav({ activeTab = 'ACCOUNT' }) {
     { label: 'WITHDRAW FUNDS', path: '/withdraw' },
     { label: 'DEPOSITS LIST', path: '/deposit-list' },
     { label: 'TRANSACTIONS', path: '/transactions' },
-    { label: 'REFERRALS', path: '/dashboard?tab=REFERRALS' },
+    { label: 'REFERRALS', path: '/referrals' },
     { label: 'SETTINGS', path: '/dashboard?tab=SETTINGS' },
     { label: 'LOGOUT', action: logout },
   ];
