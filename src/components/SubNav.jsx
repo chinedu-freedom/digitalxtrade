@@ -14,7 +14,7 @@ export default function SubNav({ activeTab = 'ACCOUNT' }) {
     { label: 'DEPOSITS LIST', path: '/deposit-list' },
     { label: 'TRANSACTIONS', path: '/transactions' },
     { label: 'REFERRALS', path: '/referrals' },
-    { label: 'SETTINGS', path: '/dashboard?tab=SETTINGS' },
+    { label: 'SETTINGS', path: '/settings' },
     { label: 'LOGOUT', action: logout },
   ];
 
