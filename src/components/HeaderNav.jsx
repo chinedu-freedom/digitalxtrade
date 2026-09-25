@@ -58,8 +58,8 @@ export default function HeaderNav() {
           {user ? (
             <>
               <Link
-                href="/dashboard"
-                className="border border-[#0085d0] text-[#0085d0] hover:bg-slate-50 transition-all px-5 py-2 rounded text-xs font-black tracking-wider uppercase flex items-center justify-center shadow-xs"
+                href="/security"
+                className="border border-[#0085d0] text-[#0085d0] hover:bg-slate-50 transition-all px-7 py-2.5 rounded text-xs font-black tracking-wider uppercase flex items-center justify-center shadow-xs"
               >
                 2FA
               </Link>

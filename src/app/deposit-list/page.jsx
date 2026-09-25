@@ -13,6 +13,7 @@ import {
   Calculator
 } from 'lucide-react';
 import HeaderNav from '@/components/HeaderNav';
+import SubNav from '@/components/SubNav';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 
@@ -90,6 +91,7 @@ export default function DepositListPage() {
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 flex flex-col justify-between">
       <HeaderNav />
+      <SubNav activeTab="DEPOSITS LIST" />
 
       {/* CONTENT AREA */}
       <section className="py-8 md:py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
