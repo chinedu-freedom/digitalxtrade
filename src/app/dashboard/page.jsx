@@ -151,20 +151,14 @@ function DashboardContent() {
 
                 {/* Separate Deposit & Profit Balance Units */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-w-lg">
-                  <div className="bg-blue-50/80 border border-blue-100 rounded-lg p-3.5 flex items-center justify-between shadow-2xs">
-                    <div>
-                      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Deposit Balance</div>
-                      <div className="text-xl font-extrabold text-slate-900">${parseFloat(user.depositBalance || user.deposit_balance || 0).toFixed(2)}</div>
-                    </div>
-                    <span className="text-xs font-bold px-2.5 py-1 bg-blue-100 text-blue-700 rounded-md">Capital</span>
+                  <div className="bg-blue-50/80 border border-blue-100 rounded-lg p-3.5 shadow-2xs">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Deposit Balance</div>
+                    <div className="text-xl font-extrabold text-slate-900">${parseFloat(user.depositBalance || user.deposit_balance || 0).toFixed(2)}</div>
                   </div>
 
-                  <div className="bg-emerald-50/80 border border-emerald-100 rounded-lg p-3.5 flex items-center justify-between shadow-2xs">
-                    <div>
-                      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Profit Balance</div>
-                      <div className="text-xl font-extrabold text-emerald-600">${parseFloat(user.profitBalance || user.profit_balance || 0).toFixed(2)}</div>
-                    </div>
-                    <span className="text-xs font-bold px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-md">Earnings</span>
+                  <div className="bg-emerald-50/80 border border-emerald-100 rounded-lg p-3.5 shadow-2xs">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Profit Balance</div>
+                    <div className="text-xl font-extrabold text-emerald-600">${parseFloat(user.profitBalance || user.profit_balance || 0).toFixed(2)}</div>
                   </div>
                 </div>
 

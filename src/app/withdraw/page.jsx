@@ -360,21 +360,23 @@ export default function WithdrawFundsPage() {
                         <SelectValue placeholder="Select Source Wallet" />
                       </SelectTrigger>
                       <SelectContent searchable={false} className="bg-white border border-slate-200 shadow-xl rounded-lg">
-                        <SelectItem value="deposit" className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer">
+                        <SelectItem 
+                          value="deposit" 
+                          label={`Deposit Balance ($${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)})`}
+                          className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer"
+                        >
                           <div className="flex items-center justify-between w-full gap-4">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold">Deposit Balance</span>
-                              <span className="text-[10px] font-extrabold px-2 py-0.5 bg-blue-100 text-blue-800 rounded">Capital</span>
-                            </div>
+                            <span className="font-bold">Deposit Balance</span>
                             <span className="font-extrabold text-blue-600">${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)}</span>
                           </div>
                         </SelectItem>
-                        <SelectItem value="profit" className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer">
+                        <SelectItem 
+                          value="profit" 
+                          label={`Profit Balance ($${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)})`}
+                          className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer"
+                        >
                           <div className="flex items-center justify-between w-full gap-4">
-                            <div className="flex items-center gap-2">
-                              <span className="font-bold">Profit Balance</span>
-                              <span className="text-[10px] font-extrabold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">Earnings</span>
-                            </div>
+                            <span className="font-bold">Profit Balance</span>
                             <span className="font-extrabold text-emerald-600">${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)}</span>
                           </div>
                         </SelectItem>

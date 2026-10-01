@@ -8,7 +8,7 @@ const SelectContext = createContext(null);
 const extractTextFromReactNode = (node) => {
   if (node === null || node === undefined) return '';
   if (typeof node === 'string' || typeof node === 'number') return String(node);
-  if (Array.isArray(node)) return node.map(extractTextFromReactNode).join('');
+  if (Array.isArray(node)) return node.map(extractTextFromReactNode).filter(Boolean).join(' ');
   if (React.isValidElement(node)) {
     if (node.props && node.props.children) {
       return extractTextFromReactNode(node.props.children);
@@ -28,6 +28,9 @@ const findLabelInChildren = (node, targetValue) => {
   }
   if (React.isValidElement(node)) {
     if (node.props && node.props.value !== undefined && String(node.props.value) === String(targetValue)) {
+      if (node.props.label) {
+        return node.props.label;
+      }
       if (node.props.children) {
         return extractTextFromReactNode(node.props.children);
       }
@@ -191,11 +194,11 @@ const extractText = (node) => {
   return '';
 };
 
-export function SelectItem({ value, children, className = '' }) {
+export function SelectItem({ value, label, children, className = '' }) {
   const { selectedValue, handleSelect, setSelectedLabel } = useContext(SelectContext);
   const isSelected = selectedValue === value;
 
-  const labelText = extractText(children);
+  const labelText = label || extractText(children);
 
   useEffect(() => {
     if (isSelected && labelText) {
