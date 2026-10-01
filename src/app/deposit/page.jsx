@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import QRCode from 'qrcode';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 import { 
   Calculator, 
   Copy, 
@@ -14,97 +15,21 @@ import {
   CheckCircle2, 
   Wallet,
   Clock,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import HeaderNav from '@/components/HeaderNav';
 import SubNav from '@/components/SubNav';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
+import PageLoader from '@/components/PageLoader';
+
+
 
 export default function MakeDepositPage() {
-  // Available investment deposit plans matching screenshots exactly
-  const plans = [
-    {
-      id: 'foundation',
-      title: 'FOUNDATION PLAN',
-      planName: 'Plan 1',
-      depositRange: '$40.00 - $4999.00',
-      minAmount: 40.0,
-      maxAmount: 4999.0,
-      profitRate: '2.80%',
-      profitNumber: 2.80,
-      profitLabel: 'Daily Profit (%)',
-      durationDays: 30,
-      isPromo: false
-    },
-    {
-      id: 'acceleration',
-      title: 'ACCELERATION PLAN',
-      planName: 'Plan 2',
-      depositRange: '$5000.00 - $9999.00',
-      minAmount: 5000.0,
-      maxAmount: 9999.0,
-      profitRate: '5.50%',
-      profitNumber: 5.50,
-      profitLabel: 'Daily Profit (%)',
-      durationDays: 30,
-      isPromo: false
-    },
-    {
-      id: 'stability',
-      title: 'STABILITY PLAN',
-      planName: 'Plan 3',
-      depositRange: '$10000.00 - $19999.00',
-      minAmount: 10000.0,
-      maxAmount: 19999.0,
-      profitRate: '8.50%',
-      profitNumber: 8.50,
-      profitLabel: 'Daily Profit (%)',
-      durationDays: 30,
-      isPromo: false
-    },
-    {
-      id: 'wealth',
-      title: 'WEALTH PLAN',
-      planName: 'Plan 4',
-      depositRange: '$20000.00 - ∞',
-      minAmount: 20000.0,
-      maxAmount: Infinity,
-      profitRate: '10.50%',
-      profitNumber: 10.50,
-      profitLabel: 'Daily Profit (%)',
-      durationDays: 30,
-      isPromo: false
-    },
-    {
-      id: 'promo1',
-      title: 'DIGITALXTRADE MAX PLAN(250% In 48 hours)',
-      planName: 'PROMO PLAN1',
-      depositRange: '$1000.00 - $4999.00',
-      minAmount: 1000.0,
-      maxAmount: 4999.0,
-      profitRate: '300.00%',
-      profitNumber: 300.0,
-      profitLabel: 'Profit (%)',
-      durationHours: 48,
-      isPromo: true
-    },
-    {
-      id: 'promo2',
-      title: 'DIGITALXTRADE SUPER PLAN(500% In 72 hours)',
-      planName: 'PROMO PLAN 2',
-      depositRange: '$5000.00 - $100000.00',
-      minAmount: 5000.0,
-      maxAmount: 100000.0,
-      profitRate: '500.00%',
-      profitNumber: 500.0,
-      profitLabel: 'Profit (%)',
-      durationHours: 72,
-      isPromo: true
-    }
-  ];
+  const { user, fetchUser, refreshUser } = useAuth();
 
-  // Payment processing options
+  // Payment processing options with user manual deposit addresses & exchange icons
   const processors = [
     {
       id: 'bitcoin',
@@ -112,7 +37,9 @@ export default function MakeDepositPage() {
       symbol: 'BTC',
       badgeColor: 'bg-[#f7931a]',
       badgeSymbol: '₿',
-      address: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
+      networkLabel: 'Bitcoin Mainnet',
+      iconUrl: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035',
+      address: 'bc1qwz6fqarhsuhgllxnqz3ekq8krdfgctkl6r5utk',
       balance: 0.00
     },
     {
@@ -121,35 +48,103 @@ export default function MakeDepositPage() {
       symbol: 'USDT',
       badgeColor: 'bg-[#26a17b]',
       badgeSymbol: '₮',
-      address: 'TYDzsYUEpvnYmQk4zGP9sWWcTEd3GL6X7b',
+      networkLabel: 'Tron (TRC-20)',
+      iconUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035',
+      address: 'TQsUzgqcBhJe47Tx8fCzEi9GJJUpfpYyio',
       balance: 0.00
     },
     {
       id: 'usdt_bep20',
       name: 'USDT(BEP20):',
       symbol: 'USDT',
-      badgeColor: 'bg-[#5068f2]',
+      badgeColor: 'bg-[#f3ba2f]',
       badgeSymbol: '₮',
-      address: '0x71C83605273C1964f4fB34b07D14187f58b0D892',
+      networkLabel: 'BSC (BEP-20)',
+      iconUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035',
+      address: '0x003848D153e45DDdd24d498B921A888a5567C9c3',
       balance: 0.00
     },
     {
       id: 'litecoin',
       name: 'LITECOIN:',
       symbol: 'LTC',
-      badgeColor: 'bg-[#a6a9aa]',
+      badgeColor: 'bg-[#345d9d]',
       badgeSymbol: 'Ł',
-      address: 'ltc1qg62u6e45p20a6e026y24s9gsv9e49v3z27j7ea',
+      networkLabel: 'Litecoin Mainnet',
+      iconUrl: 'https://cryptologos.cc/logos/litecoin-ltc-logo.svg?v=035',
+      address: 'ltc1qzhnnvz4gqe7ejhkxgw4jcys28wj6ru2ce79tan',
       balance: 0.00
     }
   ];
 
   // State
-  const [selectedPlanId, setSelectedPlanId] = useState('foundation');
+  const [selectedPlanId, setSelectedPlanId] = useState('');
   const [selectedProcessorId, setSelectedProcessorId] = useState('bitcoin');
+  const [depositMode, setDepositMode] = useState('automatic'); // 'automatic' | 'manual'
   const [paymentType, setPaymentType] = useState('topup'); // 'topup' | 'balance'
   const [spendAmount, setSpendAmount] = useState('40.00');
   const [accountBalance, setAccountBalance] = useState(0.00);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(true);
+  const [fetchedWallets, setFetchedWallets] = useState(null);
+  const [fetchedBalances, setFetchedBalances] = useState(null);
+  const [dynamicPlans, setDynamicPlans] = useState([]);
+
+  // Fetch dynamic plans & deposit wallets from backend
+  useEffect(() => {
+    let isMounted = true;
+    const fetchDepositPlans = async () => {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const response = await fetch('http://localhost:3001/api/deposit/plans', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted && data.success) {
+            if (data.accountBalance !== undefined) {
+              setAccountBalance(data.accountBalance);
+            }
+            if (data.userBalances) {
+              setFetchedBalances(data.userBalances);
+            }
+            if (data.wallets) {
+              setFetchedWallets(data.wallets);
+            }
+            if (data.plans && Array.isArray(data.plans) && data.plans.length > 0) {
+              const mapped = data.plans.map(p => {
+                const minStr = '$' + Number(p.minAmount).toFixed(2);
+                const maxStr = p.maxAmount ? '$' + Number(p.maxAmount).toFixed(2) : '∞';
+                return {
+                  id: p.id,
+                  title: p.name || p.title,
+                  name: p.name,
+                  planName: p.planLabel || p.planName || p.name,
+                  depositRange: p.depositRange || (minStr + ' - ' + maxStr),
+                  minAmount: Number(p.minAmount),
+                  maxAmount: p.maxAmount ? Number(p.maxAmount) : Infinity,
+                  profitRate: p.profitRate || (Number(p.dailyProfit).toFixed(2) + '%'),
+                  profitNumber: Number(p.dailyProfit || p.profitNumber || 0),
+                  profitLabel: p.profitLabel || p.profitType || 'Daily Profit (%)',
+                  durationDays: p.durationDays || 30,
+                  durationHours: p.durationHours,
+                  isPromo: !!p.isPromo
+                };
+              });
+              setDynamicPlans(mapped);
+              setSelectedPlanId(prev => (prev && mapped.some(m => m.id === prev) ? prev : mapped[0].id));
+              setSpendAmount(mapped[0].minAmount.toFixed(2));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch deposit plans from backend:', err);
+      } finally {
+        if (isMounted) setIsLoadingPlans(false);
+      }
+    };
+    fetchDepositPlans();
+    return () => { isMounted = false; };
+  }, []);
 
   // Profit Calculator Modal State (Calendar Date Picker)
   const todayDate = new Date();
@@ -168,6 +163,65 @@ export default function MakeDepositPage() {
   const [isCopiedAddress, setIsCopiedAddress] = useState(false);
   const [isProcessingSpend, setIsProcessingSpend] = useState(false);
   const [isConfirmingTx, setIsConfirmingTx] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+
+  // Live polling for OxaPay deposit status when invoice is active
+  useEffect(() => {
+    if (!depositInvoice || paymentConfirmed) return;
+
+    const pollId = depositInvoice.trackId || depositInvoice.track_id || depositInvoice.id;
+    if (!pollId) return;
+
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/deposit/status/${pollId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.success && data.isConfirmed) {
+            setPaymentConfirmed(true);
+            toast.success('Deposit confirmed and credited successfully!');
+            setAccountBalance(prev => prev + (data.amount || depositInvoice.amount || 0));
+          }
+        }
+      } catch (err) {
+        console.error('Polling deposit status error:', err);
+      }
+    };
+
+    checkStatus();
+    const interval = setInterval(checkStatus, 3500);
+
+    return () => clearInterval(interval);
+  }, [depositInvoice, paymentConfirmed]);
+
+  // Active processors merged with backend company wallets and distinct crypto balances
+  const activeProcessors = processors.map(proc => {
+    let procBal = 0;
+    if (fetchedBalances && fetchedBalances[proc.id] !== undefined) {
+      procBal = Number(fetchedBalances[proc.id]);
+    } else {
+      if (proc.id === 'bitcoin') procBal = Number(user?.btcBalance ?? 0);
+      else if (proc.id === 'usdt_trc20') procBal = Number(user?.usdtTrc20Balance ?? 0);
+      else if (proc.id === 'usdt_bep20') procBal = Number(user?.usdtBep20Balance ?? 0);
+      else if (proc.id === 'litecoin') procBal = Number(user?.ltcBalance ?? 0);
+      else procBal = Number(user?.balance ?? accountBalance ?? 0);
+
+      if (procBal === 0 && accountBalance > 0 && proc.id === 'usdt_trc20') {
+        const totalCrypto = Number(user?.btcBalance ?? 0) + Number(user?.usdtTrc20Balance ?? 0) + Number(user?.usdtBep20Balance ?? 0) + Number(user?.ltcBalance ?? 0);
+        if (totalCrypto === 0) procBal = accountBalance;
+      }
+    }
+
+    if (fetchedWallets && fetchedWallets[proc.id]) {
+      return {
+        ...proc,
+        address: fetchedWallets[proc.id].address || proc.address,
+        name: fetchedWallets[proc.id].name ? `${fetchedWallets[proc.id].name}:` : proc.name,
+        balance: procBal
+      };
+    }
+    return { ...proc, balance: procBal };
+  });
 
   // Re-calculate profit based on selected calendar date, amount, and plan
   const recomputeProfit = (targetDate, amountVal, plan) => {
@@ -197,19 +251,24 @@ export default function MakeDepositPage() {
     setSpendAmount(plan.minAmount.toFixed(2));
   };
 
-  const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[0];
-  const selectedProcessor = processors.find(p => p.id === selectedProcessorId) || processors[0];
+  const selectedPlan = dynamicPlans.find(p => p.id === selectedPlanId) || dynamicPlans[0] || { id: '', title: '', minAmount: 0, maxAmount: Infinity };
+  const selectedProcessor = activeProcessors.find(p => p.id === selectedProcessorId) || activeProcessors[0];
 
   // Handle open profit calculator
   const handleOpenCalculator = (plan, e) => {
     e.stopPropagation();
     setCalcModalPlan(plan);
     setCalcAmount(plan.minAmount.toString());
+    const defaultTarget = new Date();
+    defaultTarget.setDate(defaultTarget.getDate() + (plan.durationDays || 30));
+    setSelectedCalendarDate(defaultTarget);
+    recomputeProfit(defaultTarget, plan.minAmount.toString(), plan);
   };
 
   // Handle Spend submission
   const handleSpend = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
     const amountNum = parseFloat(spendAmount);
 
     if (isNaN(amountNum) || amountNum < selectedPlan.minAmount) {
@@ -222,8 +281,9 @@ export default function MakeDepositPage() {
       return;
     }
 
-    if (paymentType === 'balance' && amountNum > accountBalance) {
-      toast.error('Insufficient account balance. Please select Topup payment.');
+    const specificBal = Number(selectedProcessor?.balance ?? 0);
+    if (paymentType === 'balance' && amountNum > specificBal) {
+      toast.error(`Insufficient ${selectedProcessor.name.replace(':', '')} balance ($${specificBal.toFixed(2)}). Please select a currency with sufficient funds (e.g. Litecoin) or choose Topup.`);
       return;
     }
 
@@ -232,34 +292,65 @@ export default function MakeDepositPage() {
     try {
       const response = await fetch('http://localhost:3001/api/deposit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(typeof window !== 'undefined' && localStorage.getItem('stakelab_token') ? { 'Authorization': `Bearer ${localStorage.getItem('stakelab_token')}` } : {})
+        },
         body: JSON.stringify({
           planId: selectedPlan.id,
           amount: amountNum,
           paymentMethod: paymentType,
-          processorId: selectedProcessor.id
+          processorId: selectedProcessor.id,
+          payment_method: selectedProcessor.name,
+          mode: depositMode,
+          depositMode: depositMode
         })
       });
       const data = await response.json();
+
+      if (!response.ok || (data && data.success === false)) {
+        toast.error(data?.message || 'Failed to process deposit request.');
+        return;
+      }
       
-      const orderData = data.order || {
-        id: `DEP-${Date.now()}`,
+      const returnedAddress = (depositMode === 'manual' ? selectedProcessor.address : null) || data.address || data.payAddress || (data.order && data.order.payAddress) || selectedProcessor.address;
+
+      const orderData = data.order || data.deposit || {
+        id: data.trackId ? `DEP-${data.trackId}` : `DEP-${Date.now()}`,
+        trackId: data.trackId || data.track_id,
         planName: selectedPlan.title,
         amount: amountNum,
-        payAddress: selectedProcessor.address,
+        payAddress: returnedAddress,
         processorName: selectedProcessor.name.replace(':', ''),
-        network: selectedProcessor.symbol
+        network: selectedProcessor.symbol,
+        mode: depositMode
       };
 
+      orderData.payAddress = returnedAddress;
+      if (data.trackId) orderData.trackId = data.trackId;
+
+      if (paymentType === 'balance') {
+        const remaining = data.newBalance !== undefined ? data.newBalance : Math.max(0, specificBal - amountNum);
+        setAccountBalance(remaining);
+        if (fetchUser) fetchUser();
+        else if (refreshUser) refreshUser();
+        toast.success(data.message || `Plan ${selectedPlan.title} activated successfully using account balance!`);
+        return;
+      }
+
+      setPaymentConfirmed(false);
       setDepositInvoice(orderData);
 
       // Generate QR Code for invoice address
-      const qrData = `${selectedProcessor.id}:${orderData.payAddress}?amount=${amountNum}`;
-      QRCode.toDataURL(orderData.payAddress, { width: 180, margin: 1 })
+      QRCode.toDataURL(returnedAddress, { width: 180, margin: 1 })
         .then(url => setInvoiceQrUrl(url))
         .catch(() => {});
 
-      toast.success('Deposit invoice generated successfully!');
+      if (depositMode === 'automatic' && data.dynamic) {
+        toast.success('Automatic payment address generated successfully!');
+      } else {
+        toast.success('Deposit invoice generated successfully!');
+      }
     } catch {
       // Offline fallback invoice
       const fallbackOrder = {
@@ -270,6 +361,7 @@ export default function MakeDepositPage() {
         processorName: selectedProcessor.name.replace(':', ''),
         network: selectedProcessor.symbol
       };
+      setPaymentConfirmed(false);
       setDepositInvoice(fallbackOrder);
       QRCode.toDataURL(fallbackOrder.payAddress, { width: 180, margin: 1 })
         .then(url => setInvoiceQrUrl(url))
@@ -316,6 +408,10 @@ export default function MakeDepositPage() {
     }
   };
 
+  if (isLoadingPlans) {
+    return <PageLoader />;
+  }
+
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 flex flex-col justify-between">
       <HeaderNav />
@@ -335,201 +431,264 @@ export default function MakeDepositPage() {
         </div>
 
         {/* PLANS SELECTION LIST (MATCHING SCREENSHOTS EXACTLY) */}
-        <form onSubmit={handleSpend} className="space-y-6">
-          
-          <div className="space-y-6">
-            {plans.map((plan) => {
-              const isSelected = selectedPlanId === plan.id;
-              return (
-                <div 
-                  key={plan.id}
-                  onClick={() => handleSelectPlan(plan)}
-                  className={`border border-slate-300 rounded-xs overflow-hidden transition-all bg-white cursor-pointer ${
-                    isSelected ? 'ring-1 ring-[#0085d0] shadow-xs' : 'hover:border-slate-400'
+        {isLoadingPlans ? (
+          <div className="py-12 border border-slate-200 rounded-lg text-center text-slate-600 font-semibold flex items-center justify-center gap-2">
+            <span>Loading deposit plans</span>
+            <Loader2 className="w-5 h-5 animate-spin text-[#0085d0]" />
+          </div>
+        ) : (
+          <form onSubmit={handleSpend} className="space-y-6">
+            
+            <div className="space-y-6">
+              {dynamicPlans.map((plan) => {
+                const isSelected = selectedPlanId === plan.id;
+                return (
+                  <div 
+                    key={plan.id}
+                    onClick={() => handleSelectPlan(plan)}
+                    className={`border border-slate-300 rounded-xs overflow-hidden transition-all bg-white cursor-pointer ${
+                      isSelected ? 'ring-1 ring-[#0085d0] shadow-xs' : 'hover:border-slate-400'
+                    }`}
+                  >
+                    {/* PLAN HEADER BAR WITH RADIO */}
+                    <div className="px-4 py-2.5 bg-slate-100/90 border-b border-slate-300 flex items-center gap-2.5 select-none">
+                      <input
+                        type="radio"
+                        name="planSelection"
+                        checked={isSelected}
+                        onChange={() => handleSelectPlan(plan)}
+                        className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
+                      />
+                      <label className="text-xs sm:text-sm font-bold text-slate-900 tracking-wide uppercase cursor-pointer">
+                        {plan.title}
+                      </label>
+                    </div>
+
+                    {/* TABLE CONTENT */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                          <tr className="border-b border-slate-200 text-slate-700 bg-white">
+                            <th className="py-2 px-4 font-semibold w-1/3">
+                              Plan
+                            </th>
+                            <th className="py-2 px-4 font-semibold w-1/3 text-right sm:text-center">
+                              Spent Amount ($)
+                            </th>
+                            <th className="py-2 px-4 font-semibold w-1/3 text-right">
+                              {plan.profitLabel}
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="py-2.5 px-4 font-bold text-slate-900">
+                              {plan.planName}
+                            </td>
+                            <td className="py-2.5 px-4 font-bold text-slate-900 text-right sm:text-center">
+                              {plan.depositRange}
+                            </td>
+                            <td className="py-2.5 px-4 font-bold text-slate-900 text-right">
+                              {plan.profitRate}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* CALCULATE YOUR PROFIT LINK */}
+                    <div className="px-4 py-2.5 border-t border-slate-200/80 bg-white">
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenCalculator(plan, e)}
+                        className="text-xs sm:text-sm text-[#0085d0] hover:text-[#005596] font-semibold hover:underline inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Calculate your profit &gt;&gt;</span>
+                      </button>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* DEPOSIT METHOD TYPE SELECTOR (AUTOMATIC VS MANUAL) */}
+            <div className="bg-slate-50 p-3 sm:p-3.5 rounded-lg border border-slate-300 flex flex-row items-center justify-between gap-4 shadow-2xs">
+              <div className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2 shrink-0">
+                <span className="text-[#0085d0]">⚡</span>
+                <span>Select Deposit Type:</span>
+              </div>
+              <div className="inline-flex rounded-md p-1 bg-slate-200/80 border border-slate-300 text-xs font-bold shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setDepositMode('automatic')}
+                  className={`px-3.5 sm:px-5 py-1.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    depositMode === 'automatic'
+                      ? 'bg-[#0085d0] text-white shadow-xs'
+                      : 'text-slate-700 hover:text-slate-900'
                   }`}
                 >
-                  {/* PLAN HEADER BAR WITH RADIO */}
-                  <div className="px-4 py-2.5 bg-slate-100/90 border-b border-slate-300 flex items-center gap-2.5 select-none">
-                    <input
-                      type="radio"
-                      name="planSelection"
-                      checked={isSelected}
-                      onChange={() => handleSelectPlan(plan)}
-                      className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
-                    />
-                    <label className="text-xs sm:text-sm font-bold text-slate-900 tracking-wide uppercase cursor-pointer">
-                      {plan.title}
-                    </label>
-                  </div>
-
-                  {/* TABLE CONTENT */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse text-xs sm:text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200 text-slate-700 bg-white">
-                          <th className="py-2 px-4 font-semibold w-1/3">
-                            Plan
-                          </th>
-                          <th className="py-2 px-4 font-semibold w-1/3 text-right sm:text-center">
-                            Spent Amount ($)
-                          </th>
-                          <th className="py-2 px-4 font-semibold w-1/3 text-right">
-                            {plan.profitLabel}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        <tr className="hover:bg-slate-50/50">
-                          <td className="py-2.5 px-4 font-bold text-slate-900">
-                            {plan.planName}
-                          </td>
-                          <td className="py-2.5 px-4 font-bold text-slate-900 text-right sm:text-center">
-                            {plan.depositRange}
-                          </td>
-                          <td className="py-2.5 px-4 font-bold text-slate-900 text-right">
-                            {plan.profitRate}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* CALCULATE YOUR PROFIT LINK */}
-                  <div className="px-4 py-2.5 border-t border-slate-200/80 bg-white">
-                    <button
-                      type="button"
-                      onClick={(e) => handleOpenCalculator(plan, e)}
-                      className="text-xs sm:text-sm text-[#0085d0] hover:text-[#005596] font-semibold hover:underline inline-flex items-center gap-1 cursor-pointer"
-                    >
-                      <span>Calculate your profit &gt;&gt;</span>
-                    </button>
-                  </div>
-
-                </div>
-              );
-            })}
-          </div>
-
-          {/* ACCOUNT BALANCE BAR */}
-          <div className="flex items-center justify-between py-3.5 px-1 border-b border-slate-300 font-bold text-sm text-slate-900">
-            <span>Account Balance:</span>
-            <span>${accountBalance.toFixed(2)}</span>
-          </div>
-
-          {/* PAYMENT METHOD / PROCESSORS TABLE (SCREENSHOT 4) */}
-          <div className="border border-slate-300 rounded-xs overflow-hidden shadow-2xs">
-            <table className="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr className="bg-[#0085d0] text-white">
-                  <th className="py-2.5 px-4 font-semibold w-1/2">
-                    Processing
-                  </th>
-                  <th className="py-2.5 px-4 font-semibold w-1/4 text-center">
-                    Topup
-                  </th>
-                  <th className="py-2.5 px-4 font-semibold w-1/4 text-center">
-                    Balance
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 bg-white">
-                {processors.map((proc) => {
-                  const isTopupSelected = selectedProcessorId === proc.id && paymentType === 'topup';
-                  const isBalanceSelected = selectedProcessorId === proc.id && paymentType === 'balance';
-
-                  return (
-                    <tr 
-                      key={proc.id} 
-                      className={`hover:bg-slate-50/60 transition-colors ${
-                        selectedProcessorId === proc.id ? 'bg-blue-50/30' : ''
-                      }`}
-                    >
-                      {/* Processing Name + Badge */}
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-5 h-5 rounded-full ${proc.badgeColor} text-white flex items-center justify-center font-bold text-[11px] shrink-0 shadow-2xs`}>
-                            {proc.badgeSymbol}
-                          </span>
-                          <span className="font-bold text-slate-900 tracking-tight">
-                            {proc.name}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Topup Radio Button */}
-                      <td className="py-3 px-4 text-center">
-                        <input
-                          type="radio"
-                          name="paymentOption"
-                          checked={isTopupSelected}
-                          onChange={() => {
-                            setSelectedProcessorId(proc.id);
-                            setPaymentType('topup');
-                          }}
-                          className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
-                        />
-                      </td>
-
-                      {/* Balance Radio Button */}
-                      <td className="py-3 px-4 text-center">
-                        <label className="inline-flex items-center gap-1.5 cursor-pointer text-slate-800 font-semibold">
-                          <input
-                            type="radio"
-                            name="paymentOption"
-                            checked={isBalanceSelected}
-                            onChange={() => {
-                              setSelectedProcessorId(proc.id);
-                              setPaymentType('balance');
-                            }}
-                            className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
-                          />
-                          <span>${proc.balance.toFixed(2)}</span>
-                        </label>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* AMOUNT TO SPEND INPUT & SPEND BUTTON (SCREENSHOT 4) */}
-          <div className="space-y-4 pt-2">
-            <div className="flex flex-wrap items-center gap-4">
-              <label className="text-xs sm:text-sm font-bold text-slate-900">
-                Amount to Spend ($):
-              </label>
-              <div className="w-44">
-                <input
-                  type="number"
-                  step="any"
-                  required
-                  value={spendAmount}
-                  onChange={(e) => setSpendAmount(e.target.value)}
-                  className="w-full bg-white border border-slate-400 rounded px-3 py-1.5 text-sm font-bold text-slate-900 text-center focus:outline-none focus:border-[#0085d0] focus:ring-1 focus:ring-[#0085d0]"
-                />
+                  <span>Automatic Deposit</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDepositMode('manual')}
+                  className={`px-3.5 sm:px-5 py-1.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    depositMode === 'manual'
+                      ? 'bg-[#0085d0] text-white shadow-xs'
+                      : 'text-slate-700 hover:text-slate-900'
+                  }`}
+                >
+                  <span>Manual Deposit</span>
+                </button>
               </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isProcessingSpend}
-                className="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold border border-slate-400 rounded text-xs sm:text-sm transition-colors cursor-pointer shadow-xs disabled:opacity-60"
-              >
-                {isProcessingSpend ? 'Processing...' : 'Spend'}
-              </button>
+            {/* ACCOUNT BALANCE BAR */}
+            <div className="flex items-center justify-between py-3.5 px-1 border-b border-slate-300 font-bold text-sm text-slate-900">
+              <span>Account Balance:</span>
+              <span>${accountBalance.toFixed(2)}</span>
             </div>
-          </div>
 
-        </form>
+            {/* PAYMENT METHOD / PROCESSORS TABLE */}
+            <div className="border border-slate-300 rounded-xs overflow-hidden shadow-2xs">
+              <table className="w-full text-left border-collapse text-xs sm:text-sm">
+                <thead>
+                  <tr className="bg-[#0085d0] text-white">
+                    <th className="py-2.5 px-4 font-semibold w-1/2">
+                      Processing
+                    </th>
+                    <th className="py-2.5 px-4 font-semibold w-1/4 text-center">
+                      Topup
+                    </th>
+                    <th className="py-2.5 px-4 font-semibold w-1/4 text-center">
+                      Balance
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 bg-white">
+                  {activeProcessors.map((proc) => {
+                    const isTopupSelected = selectedProcessorId === proc.id && paymentType === 'topup';
+                    const isBalanceSelected = selectedProcessorId === proc.id && paymentType === 'balance';
+
+                    return (
+                      <tr 
+                        key={proc.id} 
+                        className={`hover:bg-slate-50/60 transition-colors ${
+                          selectedProcessorId === proc.id ? 'bg-blue-50/30' : ''
+                        }`}
+                      >
+                        {/* Processing Name + Exchange Icon */}
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2.5">
+                            {proc.iconUrl ? (
+                              <img 
+                                src={proc.iconUrl} 
+                                alt={proc.name} 
+                                className="w-6 h-6 object-contain shrink-0" 
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
+                            ) : (
+                              <span className={`w-6 h-6 rounded-full ${proc.badgeColor} text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs`}>
+                                {proc.badgeSymbol}
+                              </span>
+                            )}
+                            <div>
+                              <span className="font-bold text-slate-900 tracking-tight block">
+                                {proc.name}
+                              </span>
+                              {proc.networkLabel && (
+                                <span className="text-[10px] text-slate-500 font-medium block">
+                                  {proc.networkLabel}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Topup Radio Button */}
+                        <td className="py-3 px-4 text-center">
+                          <input
+                            type="radio"
+                            name="paymentOption"
+                            checked={isTopupSelected}
+                            onChange={() => {
+                              setSelectedProcessorId(proc.id);
+                              setPaymentType('topup');
+                            }}
+                            className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
+                          />
+                        </td>
+
+                        {/* Balance Radio Button */}
+                        <td className="py-3 px-4 text-center">
+                          <label className="inline-flex items-center gap-1.5 cursor-pointer text-slate-800 font-semibold">
+                            <input
+                              type="radio"
+                              name="paymentOption"
+                              checked={isBalanceSelected}
+                              onChange={() => {
+                                setSelectedProcessorId(proc.id);
+                                setPaymentType('balance');
+                              }}
+                              className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
+                            />
+                            <span>${proc.balance.toFixed(2)}</span>
+                          </label>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* AMOUNT TO SPEND INPUT & SPEND BUTTON (SCREENSHOT 4) */}
+            <div className="space-y-4 pt-2">
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="text-xs sm:text-sm font-bold text-slate-900">
+                  Amount to Spend ($):
+                </label>
+                <div className="w-44">
+                  <input
+                    type="number"
+                    step="any"
+                    required
+                    value={spendAmount}
+                    onChange={(e) => setSpendAmount(e.target.value)}
+                    className="w-full bg-white border border-slate-400 rounded px-3 py-1.5 text-sm font-bold text-slate-900 text-center focus:outline-none focus:border-[#0085d0] focus:ring-1 focus:ring-[#0085d0]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  onClick={handleSpend}
+                  disabled={isProcessingSpend}
+                  className="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold border border-slate-400 rounded text-xs sm:text-sm transition-colors cursor-pointer shadow-xs disabled:opacity-60 inline-flex items-center gap-2"
+                >
+                  {isProcessingSpend ? (
+                    <>
+                      <span>Processing deposit</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-[#0085d0]" />
+                    </>
+                  ) : (
+                    'Spend'
+                  )}
+                </button>
+              </div>
+            </div>
+
+          </form>
+        )}
 
       </section>
 
       {/* PROFIT CALCULATOR MODAL (CALENDAR DATE-RANGE CALCULATOR) */}
       {calcModalPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-lg shadow-2xl max-w-sm w-full overflow-hidden border border-slate-300">
+        <div onClick={() => setCalcModalPlan(null)} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-lg shadow-2xl max-w-sm w-full overflow-hidden border border-slate-300 cursor-default">
             
             {/* WINDOW TOP BAR */}
             <div className="bg-slate-900 text-white px-3 py-2 flex items-center justify-between text-xs font-semibold">
@@ -571,7 +730,7 @@ export default function MakeDepositPage() {
                 <select
                   value={calendarMonth}
                   onChange={(e) => setCalendarMonth(parseInt(e.target.value))}
-                  className="border border-amber-500 rounded px-1 py-0.5 text-xs bg-white cursor-pointer font-semibold text-slate-900"
+                  className="border border-[#0085d0] rounded px-1 py-0.5 text-xs bg-white cursor-pointer font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0085d0]"
                 >
                   {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((m, idx) => (
                     <option key={m} value={idx}>{m}</option>
@@ -581,7 +740,7 @@ export default function MakeDepositPage() {
                 <select
                   value={calendarYear}
                   onChange={(e) => setCalendarYear(parseInt(e.target.value))}
-                  className="border border-amber-500 rounded px-1 py-0.5 text-xs bg-white cursor-pointer font-semibold text-slate-900"
+                  className="border border-[#0085d0] rounded px-1 py-0.5 text-xs bg-white cursor-pointer font-semibold text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#0085d0]"
                 >
                   {[2024, 2025, 2026, 2027, 2028].map((y) => (
                     <option key={y} value={y}>{y}</option>
@@ -605,10 +764,10 @@ export default function MakeDepositPage() {
               </div>
 
               {/* CALENDAR TABLE */}
-              <div className="border border-amber-500 rounded overflow-hidden">
+              <div className="border border-[#0085d0] rounded overflow-hidden">
                 <table className="w-full text-center border-collapse">
                   <thead>
-                    <tr className="bg-amber-500 text-white font-bold text-[11px]">
+                    <tr className="bg-[#0085d0] text-white font-bold text-[11px]">
                       <th className="py-1">Sun</th>
                       <th className="py-1">Mon</th>
                       <th className="py-1">Tue</th>
@@ -648,7 +807,7 @@ export default function MakeDepositPage() {
                                 isSelected 
                                   ? 'bg-[#0085d0] text-white font-bold ring-1 ring-blue-600' 
                                   : isToday 
-                                  ? 'bg-amber-200 text-slate-900 font-bold hover:bg-amber-300' 
+                                  ? 'bg-sky-100 text-[#0085d0] font-bold hover:bg-sky-200' 
                                   : 'hover:bg-slate-100 text-slate-800'
                               }`}
                             >
@@ -681,19 +840,23 @@ export default function MakeDepositPage() {
               <div className="space-y-1 pt-1 font-semibold text-xs leading-relaxed text-slate-900">
                 <div className="flex items-center gap-2">
                   <span className="w-16 text-slate-700">From:</span>
-                  <span>{todayDate.toLocaleDateString('en-US')}</span>
+                  <span>
+                    {todayDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} {todayDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="w-16 text-slate-700">To:</span>
                   <span className={selectedCalendarDate ? 'font-bold text-slate-900' : 'text-slate-500 font-normal italic'}>
-                    {selectedCalendarDate ? selectedCalendarDate.toLocaleDateString('en-US') : 'Select in the calendar'}
+                    {selectedCalendarDate
+                      ? `${selectedCalendarDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })} ${selectedCalendarDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`
+                      : 'Select in the calendar'}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="w-16 text-slate-700">Days:</span>
-                  <span>{calcDays !== null ? calcDays : 'N/A'}</span>
+                  <span>{calcDays !== null ? calcDays : 0}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -705,45 +868,36 @@ export default function MakeDepositPage() {
                       step="any"
                       value={calcAmount}
                       onChange={(e) => {
-                        setCalcAmount(e.target.value);
-                      }}
-                      className="w-20 border border-amber-500 rounded px-1.5 py-0.5 text-xs font-bold text-slate-900 bg-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (selectedCalendarDate) {
-                          recomputeProfit(selectedCalendarDate, calcAmount, calcModalPlan);
-                        } else {
-                          // Default 30 days calculation if no date clicked yet
-                          const defaultTarget = new Date();
-                          defaultTarget.setDate(defaultTarget.getDate() + 30);
-                          setSelectedCalendarDate(defaultTarget);
-                          recomputeProfit(defaultTarget, calcAmount, calcModalPlan);
+                        const newVal = e.target.value;
+                        setCalcAmount(newVal);
+                        let target = selectedCalendarDate;
+                        if (!target) {
+                          target = new Date();
+                          target.setDate(target.getDate() + (calcModalPlan?.durationDays || 30));
+                          setSelectedCalendarDate(target);
                         }
+                        recomputeProfit(target, newVal, calcModalPlan);
                       }}
-                      className="px-2 py-0.5 bg-amber-100 hover:bg-amber-200 border border-amber-500 rounded text-[11px] font-bold text-slate-900 cursor-pointer shadow-2xs"
-                    >
-                      Calculate
-                    </button>
+                      className="w-24 border border-[#0085d0] rounded px-1.5 py-0.5 text-xs font-bold text-slate-900 bg-white focus:outline-none focus:ring-1 focus:ring-[#0085d0]"
+                    />
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="w-16 text-slate-700">Percent:</span>
-                  <span>{selectedCalendarDate ? calcModalPlan.profitRate : 'N/A'}</span>
+                  <span>{selectedCalendarDate ? calcModalPlan.profitRate : '0.0%'}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="w-16 text-slate-700">Profit $:</span>
                   <span className="font-bold text-emerald-600">
-                    {calcProfitResult !== null ? calcProfitResult.toFixed(2) : 'N/A'}
+                    {calcProfitResult !== null ? calcProfitResult.toFixed(2) : '0.00'}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="w-16 text-slate-700">Deposit $:</span>
-                  <span>{selectedCalendarDate ? parseFloat(calcAmount || 0).toFixed(2) : 'N/A'}</span>
+                  <span>{selectedCalendarDate ? parseFloat(calcAmount || 0).toFixed(2) : '0.00'}</span>
                 </div>
 
                 {/* SPEND BUTTON (MATCHING SCREENSHOT) */}
@@ -756,7 +910,7 @@ export default function MakeDepositPage() {
                       setCalcModalPlan(null);
                       toast.success(`Selected ${calcModalPlan.title} ($${calcAmount})`);
                     }}
-                    className="px-4 py-1.5 bg-[#fef08a] hover:bg-[#fde047] border border-amber-500 rounded text-xs font-bold text-slate-900 cursor-pointer shadow-xs transition-colors"
+                    className="px-6 py-2 bg-[#0085d0] hover:bg-[#0072ce] text-white rounded text-xs font-bold uppercase tracking-wider cursor-pointer shadow-xs transition-colors"
                   >
                     Spend
                   </button>
@@ -772,8 +926,8 @@ export default function MakeDepositPage() {
 
       {/* DEPOSIT INVOICE MODAL (CRYPTO PAYMENT) */}
       {depositInvoice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-slate-200">
+        <div onClick={() => setDepositInvoice(null)} className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/65 backdrop-blur-xs animate-in fade-in duration-200 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-xl shadow-2xl max-w-md sm:max-w-lg w-full max-h-[88vh] overflow-y-auto p-4 sm:p-6 space-y-3.5 border border-slate-200 cursor-default my-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 text-slate-900 font-bold text-lg">
                 <ShieldCheck className="w-5 h-5 text-[#0085d0]" />
@@ -787,84 +941,155 @@ export default function MakeDepositPage() {
               </button>
             </div>
 
-            {/* ORDER SUMMARY */}
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs sm:text-sm">
-              <div className="flex justify-between text-slate-700">
-                <span>Selected Plan:</span>
-                <strong className="text-slate-900">{depositInvoice.planName}</strong>
-              </div>
-              <div className="flex justify-between text-slate-700">
-                <span>Amount to Pay:</span>
-                <strong className="text-[#0085d0] text-base">${depositInvoice.amount.toFixed(2)} USD</strong>
-              </div>
-              <div className="flex justify-between text-slate-700">
-                <span>Payment Asset:</span>
-                <strong className="text-slate-900">{depositInvoice.processorName} ({depositInvoice.network})</strong>
-              </div>
-            </div>
+            {paymentConfirmed ? (
+              /* Celebration Success Card on Confirmed OxaPay Deposit */
+              <div className="space-y-5 py-2 animate-in zoom-in duration-300 text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-600 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+                  <CheckCircle2 className="w-10 h-10 animate-bounce text-emerald-600" />
+                </div>
 
-            {/* QR CODE & WALLET ADDRESS */}
-            <div className="flex flex-col items-center p-4 bg-white border border-slate-200 rounded-lg space-y-3">
-              {invoiceQrUrl && (
-                <img
-                  src={invoiceQrUrl}
-                  alt="Deposit QR Code"
-                  className="w-40 h-40 object-contain rounded"
-                />
-              )}
-              <div className="text-center space-y-1 w-full">
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                  Send exact payment to address:
-                </span>
-                <div className="flex items-center justify-center gap-1.5 bg-slate-100 p-2 rounded border border-slate-200 max-w-full">
-                  <span className="font-mono text-xs text-slate-900 truncate select-all">
-                    {depositInvoice.payAddress}
-                  </span>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+                    Deposit Confirmed & Credited!
+                  </h3>
+                  <p className="text-xs text-emerald-600 font-bold">
+                    +${depositInvoice.amount.toFixed(2)} USD has been credited to your Account Balance
+                  </p>
+                </div>
+
+                <div className="bg-slate-50 p-4 rounded-xl border border-emerald-500/30 text-xs text-slate-700 space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Payment Status:</span>
+                    <span className="text-emerald-600 font-bold">COMPLETED</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Amount Credited:</span>
+                    <span className="text-slate-900 font-bold">${depositInvoice.amount.toFixed(2)} USD</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Payment Gateway:</span>
+                    <span className="text-slate-800 font-medium">{depositInvoice.processorName} ({depositInvoice.network})</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
                   <button
                     type="button"
-                    onClick={handleCopyAddress}
-                    className="p-1 rounded text-[#0085d0] hover:bg-slate-200 transition-colors shrink-0"
-                    title="Copy wallet address"
+                    onClick={() => {
+                      setDepositInvoice(null);
+                      setPaymentConfirmed(false);
+                    }}
+                    className="w-full bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold py-2.5 rounded-lg text-xs transition-all text-center shadow-xs cursor-pointer"
                   >
-                    {isCopiedAddress ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                    Done & Continue
                   </button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* ORDER SUMMARY */}
+                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2 text-xs sm:text-sm">
+                  <div className="flex justify-between text-slate-700">
+                    <span>Selected Plan:</span>
+                    <strong className="text-slate-900">{depositInvoice.planName}</strong>
+                  </div>
+                  <div className="flex justify-between text-slate-700">
+                    <span>Amount to Pay:</span>
+                    <strong className="text-[#0085d0] text-base">${depositInvoice.amount.toFixed(2)} USD</strong>
+                  </div>
+                  <div className="flex justify-between text-slate-700">
+                    <span>Payment Asset:</span>
+                    <strong className="text-slate-900">{depositInvoice.processorName} ({depositInvoice.network})</strong>
+                  </div>
+                </div>
 
-            {/* TRANSACTION CONFIRMATION FORM */}
-            <form onSubmit={handleConfirmPayment} className="space-y-3 pt-1">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                  Transaction Hash / Payment Reference (TXID):
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Paste your transaction ID or hash here"
-                  value={txHashInput}
-                  onChange={(e) => setTxHashInput(e.target.value)}
-                  className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs sm:text-sm font-mono text-slate-900 focus:outline-none focus:border-[#0085d0]"
-                />
-              </div>
+                {/* QR CODE & WALLET ADDRESS */}
+                <div className="flex flex-col items-center p-4 bg-white border border-slate-200 rounded-lg space-y-3">
+                  {invoiceQrUrl && (
+                    <img
+                      src={invoiceQrUrl}
+                      alt="Deposit QR Code"
+                      className="w-32 h-32 sm:w-36 sm:h-36 object-contain rounded border border-slate-200"
+                    />
+                  )}
+                  <div className="text-center space-y-1 w-full">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                      Send exact payment to address:
+                    </span>
+                    <div className="flex items-center justify-center gap-1.5 bg-slate-100 p-2 rounded border border-slate-200 max-w-full">
+                      <span className="font-mono text-xs text-slate-900 truncate select-all">
+                        {depositInvoice.payAddress}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCopyAddress}
+                        className="p-1 rounded text-[#0085d0] hover:bg-slate-200 transition-colors shrink-0"
+                        title="Copy wallet address"
+                      >
+                        {isCopiedAddress ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
 
-              <div className="flex items-center gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setDepositInvoice(null)}
-                  className="flex-1 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded text-xs font-bold uppercase transition-colors"
-                >
-                  Pay Later
-                </button>
-                <button
-                  type="submit"
-                  disabled={isConfirmingTx}
-                  className="flex-1 py-2.5 bg-[#0085d0] hover:bg-[#0072ce] text-white rounded text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
-                >
-                  {isConfirmingTx ? 'Verifying...' : 'I Have Paid'}
-                </button>
-              </div>
-            </form>
+                  {depositInvoice.trackId && (
+                    <p className="text-[11px] text-slate-500 font-mono pt-1">
+                      Track ID: <span className="text-slate-800 font-bold">{depositInvoice.trackId}</span>
+                    </p>
+                  )}
+                </div>
+
+                {/* LIVE BLOCKCHAIN POLLING INDICATOR */}
+                <div className="flex items-center justify-center gap-2 text-xs text-amber-600 font-medium py-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  {depositMode === 'automatic' ? (
+                    <span>Waiting for automatic blockchain payment... (Auto-credits on completion)</span>
+                  ) : (
+                    <span>Send exact payment to address above and paste TXID below for admin verification</span>
+                  )}
+                </div>
+
+                {/* TRANSACTION CONFIRMATION FORM */}
+                <form onSubmit={handleConfirmPayment} className="space-y-3 pt-1">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+                      Transaction Hash / Payment Reference (TXID):
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Paste your transaction ID or hash here"
+                      value={txHashInput}
+                      onChange={(e) => setTxHashInput(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs sm:text-sm font-mono text-slate-900 focus:outline-none focus:border-[#0085d0]"
+                    />
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setDepositInvoice(null)}
+                      className="hidden"
+                    >
+                      Pay Later
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isConfirmingTx}
+                      className="w-full py-2.5 bg-[#0085d0] hover:bg-[#0072ce] text-white rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-xs inline-flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      {isConfirmingTx ? (
+                        <>
+                          <span>Verifying payment</span>
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                        </>
+                      ) : (
+                        'I Have Paid'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
 
           </div>
         </div>

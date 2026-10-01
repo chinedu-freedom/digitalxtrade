@@ -35,7 +35,7 @@ export default function AboutCertificateSection() {
         {/* HIGH DEFINITION CERTIFICATE IMAGE CARD */}
         <div 
           onClick={() => setIsModalOpen(true)}
-          className="group relative w-full max-w-2xl bg-white border border-slate-300/90 shadow-2xl rounded-sm overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
+          className="group relative w-full max-w-xl bg-white border border-slate-300/90 shadow-2xl rounded-sm overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
         >
           {/* Subtle Hover overlay */}
           <div className="absolute inset-0 bg-slate-950/0 group-hover:bg-slate-950/5 transition-colors z-10 flex items-center justify-center">
@@ -44,27 +44,14 @@ export default function AboutCertificateSection() {
             </span>
           </div>
 
-          <div className="flex flex-col w-full bg-white">
-            {/* Top Half of Certificate */}
-            <div className="relative w-full aspect-[800/520]">
-              <Image
-                src="/images/cert-top.png"
-                alt="Certificate of Incorporation Top - Digital X Trade Limited"
-                fill
-                priority
-                className="object-contain object-top block"
-              />
-            </div>
-            {/* Bottom Half of Certificate */}
-            <div className="relative w-full aspect-[800/540] -mt-1">
-              <Image
-                src="/images/cert-bottom.png"
-                alt="Certificate of Incorporation Bottom - Digital X Trade Limited"
-                fill
-                priority
-                className="object-contain object-top block"
-              />
-            </div>
+          <div className="relative w-full aspect-[833/1216] bg-white">
+            <Image
+              src="/cert.png"
+              alt="Certificate of Incorporation - Digital X Trade Limited"
+              fill
+              priority
+              className="object-contain block"
+            />
           </div>
         </div>
 
@@ -77,7 +64,7 @@ export default function AboutCertificateSection() {
           onClick={() => setIsModalOpen(false)}
         >
           <div 
-            className="relative max-w-3xl w-full bg-white rounded-lg p-2 md:p-4 max-h-[92vh] flex flex-col overflow-y-auto shadow-2xl border border-slate-200"
+            className="relative max-w-2xl w-full bg-white rounded-lg p-2 md:p-4 max-h-[92vh] flex flex-col overflow-y-auto shadow-2xl border border-slate-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header Bar */}
@@ -88,32 +75,34 @@ export default function AboutCertificateSection() {
                 </h4>
                 <p className="text-xs text-slate-500 font-medium">Company No. 4490004 &bull; Companies House Cardiff</p>
               </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full p-2 transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <a
+                  href="/cert.png"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1.5 transition-colors"
+                  title="Open full image in new tab"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Open Full</span>
+                </a>
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full p-2 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Modal Certificate View */}
-            <div className="flex flex-col w-full bg-white p-2">
-              <div className="relative w-full aspect-[800/520]">
-                <Image
-                  src="/images/cert-top.png"
-                  alt="Certificate of Incorporation Top"
-                  fill
-                  className="object-contain object-top"
-                />
-              </div>
-              <div className="relative w-full aspect-[800/540] -mt-1">
-                <Image
-                  src="/images/cert-bottom.png"
-                  alt="Certificate of Incorporation Bottom"
-                  fill
-                  className="object-contain object-top"
-                />
-              </div>
+            <div className="relative w-full aspect-[833/1216] bg-white p-2">
+              <Image
+                src="/cert.png"
+                alt="Certificate of Incorporation - Digital X Trade Limited"
+                fill
+                className="object-contain"
+              />
             </div>
           </div>
         </div>

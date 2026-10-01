@@ -11,7 +11,7 @@ export default function FloatingWidgets() {
       sender: 'agent',
       name: 'Sarah - DIGITALXTRADE Support',
       text: 'Hello! 👋 Welcome to DIGITALXTRADE. How can we assist your trading or account today?',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -36,7 +36,7 @@ export default function FloatingWidgets() {
       id: Date.now(),
       sender: 'user',
       text: text.trim(),
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -64,7 +64,7 @@ export default function FloatingWidgets() {
         sender: 'agent',
         name: 'Sarah - DIGITALXTRADE Support',
         text: replyText,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
       };
 
       setMessages((prev) => [...prev, agentMsg]);

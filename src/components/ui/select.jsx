@@ -93,12 +93,12 @@ export function SelectTrigger({ className = '', children }) {
     <button
       type="button"
       onClick={() => setOpen(!open)}
-      className={`w-full flex items-center justify-between px-4 py-3 bg-[#060f22] border border-[#182848] rounded-xl text-xs font-bold text-white focus:outline-none focus:border-[#ff0044] transition-all cursor-pointer select-none font-sans overflow-hidden min-w-0 ${className}`}
+      className={`w-full flex items-center justify-between px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0085d0]/20 focus:border-[#0085d0] transition-all cursor-pointer select-none font-sans overflow-hidden min-w-0 ${className}`}
     >
       <div className="flex items-center gap-2 min-w-0 overflow-hidden shrink flex-1 text-left">
         {children}
       </div>
-      <ChevronDown className={`w-4 h-4 ml-2 text-slate-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
+      <ChevronDown className={`w-4 h-4 ml-2 text-slate-500 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
     </button>
   );
 }
@@ -106,7 +106,7 @@ export function SelectTrigger({ className = '', children }) {
 export function SelectValue({ placeholder = 'Select...', children }) {
   const { selectedValue, selectedLabel } = useContext(SelectContext);
   return (
-    <span className="truncate block w-full min-w-0 text-white font-sans text-xs font-bold">
+    <span className="truncate block w-full min-w-0 text-slate-900 font-sans text-xs font-bold">
       {children !== undefined ? children : (selectedLabel || selectedValue || <span className="text-slate-400 font-normal">{placeholder}</span>)}
     </span>
   );
@@ -139,9 +139,9 @@ export function SelectContent({ className = '', searchable = true, searchPlaceho
   });
 
   return (
-    <div className={`absolute left-0 right-0 top-full mt-1.5 bg-[#081226] border border-[#ff0044]/30 rounded-xl shadow-2xl overflow-hidden z-50 font-sans ${className}`}>
+    <div className={`absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50 font-sans text-slate-800 ${className}`}>
       {searchable && (
-        <div className="p-2 border-b border-[#16274a] bg-[#060f22] sticky top-0 z-10">
+        <div className="p-2 border-b border-slate-100 bg-slate-50 sticky top-0 z-10">
           <div className="relative flex items-center">
             <Search className="w-3.5 h-3.5 absolute left-3 text-slate-400" />
             <input
@@ -150,7 +150,7 @@ export function SelectContent({ className = '', searchable = true, searchPlaceho
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full bg-[#0d1c3a] border border-[#1d335f] text-white text-xs rounded-lg pl-8 pr-7 py-2 focus:outline-none focus:border-[#ff0044] placeholder-slate-500 font-sans"
+              className="w-full bg-white border border-slate-200 text-slate-800 text-xs font-medium rounded-lg pl-8 pr-7 py-2 focus:outline-none focus:border-[#0085d0] focus:ring-2 focus:ring-[#0085d0]/20 placeholder-slate-400 font-sans"
               onClick={(e) => e.stopPropagation()}
             />
             {searchQuery && (
@@ -160,7 +160,7 @@ export function SelectContent({ className = '', searchable = true, searchPlaceho
                   e.stopPropagation();
                   setSearchQuery('');
                 }}
-                className="absolute right-2 text-slate-400 hover:text-white p-1"
+                className="absolute right-2 text-slate-400 hover:text-slate-600 p-1"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -168,7 +168,7 @@ export function SelectContent({ className = '', searchable = true, searchPlaceho
           </div>
         </div>
       )}
-      <div className="max-h-56 overflow-y-auto no-scrollbar py-1 divide-y divide-[#16274a]/40">
+      <div className="max-h-56 overflow-y-auto no-scrollbar py-1 divide-y divide-slate-100">
         {filteredChildren.length > 0 ? (
           filteredChildren
         ) : (
@@ -206,10 +206,10 @@ export function SelectItem({ value, children, className = '' }) {
   return (
     <div
       onClick={() => handleSelect(value, labelText)}
-      className={`px-4 py-3 text-xs font-semibold cursor-pointer transition-colors flex items-center justify-between font-sans ${
+      className={`px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors flex items-center justify-between font-sans ${
         isSelected
-          ? 'bg-gradient-to-r from-[#ff0044] to-[#fe780b] text-white font-bold'
-          : 'text-slate-200 hover:bg-[#12234e] hover:text-white'
+          ? 'bg-[#0085d0] text-white font-bold'
+          : 'text-slate-700 hover:bg-slate-50 hover:text-[#0085d0]'
       } ${className}`}
     >
       <span className="truncate">{children}</span>

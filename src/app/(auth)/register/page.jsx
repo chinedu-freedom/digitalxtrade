@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
 import { Eye, EyeOff, ChevronDown, Check } from 'lucide-react';
 import { toast } from 'react-toastify';
+import api from '../../../lib/api';
 
 const SECRET_QUESTIONS = [
   "What is your mother's maiden name?",
@@ -34,6 +35,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [referralCode, setReferralCode] = useState('');
+  const [uplineFullName, setUplineFullName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -50,6 +52,12 @@ export default function RegisterPage() {
       const ref = params.get('reference') || params.get('ref') || params.get('referral') || params.get('referral_code') || '';
       if (ref) {
         setReferralCode(ref);
+        api.get(`/public/upline-info?code=${encodeURIComponent(ref)}`)
+          .then((res) => {
+            const name = res.data?.fullName || res.data?.full_name || res.data?.name || res.data?.user?.full_name;
+            if (name) setUplineFullName(name);
+          })
+          .catch(() => null);
       }
     }
   }, []);
@@ -162,7 +170,11 @@ export default function RegisterPage() {
                 {/* Conditional Upline Line (Shown ONLY if referral ref URL param exists) */}
                 {referralCode && (
                   <div className="pt-2 text-xs sm:text-sm text-slate-300 font-sans">
-                    Your Upline:<strong className="text-white font-bold ml-1">{referralCode.toLowerCase() === 'spark' ? 'Chinedu freedom afamefuna (Spark)' : referralCode}</strong>
+                    Your Upline:<strong className="text-white font-bold ml-1">{uplineFullName
+                    ? `${uplineFullName} (${referralCode})`
+                    : ['spark', 'sparko'].includes(referralCode.toLowerCase())
+                    ? `Chinedu Freedom Afamefuna (${referralCode})`
+                    : referralCode}</strong>
                   </div>
                 )}
               </div>

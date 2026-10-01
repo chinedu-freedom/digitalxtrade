@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 import { 
   ChevronRight, 
   Wallet, 
@@ -14,12 +14,15 @@ import {
   Check, 
   AlertCircle,
   CreditCard,
-  Lock
+  Lock,
+  Loader2
 } from 'lucide-react';
 import HeaderNav from '@/components/HeaderNav';
 import SubNav from '@/components/SubNav';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
+import PageLoader from '@/components/PageLoader';
+import api from '@/lib/api';
 
 export default function WithdrawFundsPage() {
   const [accountBalance, setAccountBalance] = useState(0.00);
@@ -27,10 +30,11 @@ export default function WithdrawFundsPage() {
   const [selectedCurrencyId, setSelectedCurrencyId] = useState('bitcoin');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editingCurrency, setEditingCurrency] = useState(null);
   const [editAddressInput, setEditAddressInput] = useState('');
 
-  // Default currencies matching the exact screenshot layout
+  // Currencies state dynamically bound to backend API user wallet data
   const [currencies, setCurrencies] = useState([
     {
       id: 'bitcoin',
@@ -38,9 +42,10 @@ export default function WithdrawFundsPage() {
       symbol: 'BTC',
       badgeColor: 'bg-[#f7931a]',
       badgeSymbol: '₿',
+      iconUrl: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=035',
       available: 0.00,
       pending: 0.00,
-      accountId: '88888888',
+      accountId: 'Not Set',
       minWithdrawal: 20.00
     },
     {
@@ -49,60 +54,72 @@ export default function WithdrawFundsPage() {
       symbol: 'USDT',
       badgeColor: 'bg-[#26a17b]',
       badgeSymbol: '₮',
+      iconUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035',
       available: 0.00,
       pending: 0.00,
-      accountId: '88888888',
+      accountId: 'Not Set',
       minWithdrawal: 10.00
     },
     {
       id: 'usdt_bep20',
       name: 'USDT(BEP20)',
       symbol: 'USDT',
-      badgeColor: 'bg-[#5068f2]',
+      badgeColor: 'bg-[#f3ba2f]',
       badgeSymbol: '₮',
+      iconUrl: 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035',
       available: 0.00,
       pending: 0.00,
-      accountId: 'Bbsjeie',
+      accountId: 'Not Set',
       minWithdrawal: 10.00
     },
     {
       id: 'litecoin',
       name: 'LITECOIN',
       symbol: 'LTC',
-      badgeColor: 'bg-[#a6a9aa]',
+      badgeColor: 'bg-[#345d9d]',
       badgeSymbol: 'Ł',
+      iconUrl: 'https://cryptologos.cc/logos/litecoin-ltc-logo.svg?v=035',
       available: 0.00,
       pending: 0.00,
-      accountId: 'Jsjwkwkw',
+      accountId: 'Not Set',
       minWithdrawal: 15.00
     }
   ]);
 
-  // Fetch balances from backend API
-  useEffect(() => {
-    fetch('http://localhost:3001/api/withdraw')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.success && data.data) {
-          if (typeof data.data.accountBalance === 'number') {
-            setAccountBalance(data.data.accountBalance);
-          }
-          if (typeof data.data.pendingWithdrawals === 'number') {
-            setPendingWithdrawals(data.data.pendingWithdrawals);
-          }
-          if (data.data.currencies && data.data.currencies.length > 0) {
-            setCurrencies((prev) => 
-              prev.map((c) => {
-                const found = data.data.currencies.find(dc => dc.id === c.id);
-                return found ? { ...c, ...found } : c;
-              })
-            );
-          }
+  // Fetch live account balance, pending withdrawals & wallet addresses from backend API
+  const fetchWithdrawalData = async () => {
+    try {
+      setLoading(true);
+      let res;
+      try {
+        res = await api.get('/withdraw');
+      } catch (e) {
+        res = await api.get('/user/dashboard');
+      }
+
+      if (res && res.data) {
+        const d = res.data.data || res.data;
+        if (d.accountBalance !== undefined) setAccountBalance(parseFloat(d.accountBalance));
+        if (d.pendingWithdrawals !== undefined) setPendingWithdrawals(parseFloat(d.pendingWithdrawals));
+        if (d.currencies && Array.isArray(d.currencies)) {
+          setCurrencies(d.currencies);
+        } else if (res.data.user) {
+          const u = res.data.user;
+          const totalBal = parseFloat(u.balance || 0);
+          const totalPending = parseFloat(u.pending_withdrawals || 0);
+          setAccountBalance(totalBal);
+          setPendingWithdrawals(totalPending);
         }
-      })
-      .catch(() => {
-        // Fallback to static defaults
-      });
+      }
+    } catch (err) {
+      console.error('Failed to load withdrawal details:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWithdrawalData();
   }, []);
 
   const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId) || currencies[0];
@@ -110,32 +127,31 @@ export default function WithdrawFundsPage() {
   // Handle Edit Account Address
   const handleOpenEdit = (curr) => {
     setEditingCurrency(curr);
-    setEditAddressInput(curr.accountId);
+    setEditAddressInput(curr.accountId === 'Not Set' ? '' : curr.accountId);
   };
 
   const handleSaveAddress = async (e) => {
     e.preventDefault();
-    if (!editAddressInput.trim()) {
+    const cleanAddress = editAddressInput.trim();
+    if (!cleanAddress) {
       toast.error('Account address cannot be empty.');
       return;
     }
 
-    setCurrencies(prev => prev.map(c => 
-      c.id === editingCurrency.id ? { ...c, accountId: editAddressInput.trim() } : c
-    ));
-
     try {
-      await fetch('http://localhost:3001/api/withdraw/account', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currencyId: editingCurrency.id, accountId: editAddressInput.trim() })
-      });
-      toast.success(`Account ID updated for ${editingCurrency.name}`);
-    } catch {
-      toast.success(`Account ID updated locally.`);
-    }
+      const payload = {
+        currencyId: editingCurrency.id,
+        accountId: cleanAddress,
+        wallet_address: cleanAddress
+      };
 
-    setEditingCurrency(null);
+      const res = await api.post('/withdraw/account', payload);
+      toast.success(res.data?.message || `Account ID updated for ${editingCurrency.name}`);
+      setEditingCurrency(null);
+      fetchWithdrawalData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update account address');
+    }
   };
 
   // Handle Withdrawal Request Submission
@@ -148,40 +164,43 @@ export default function WithdrawFundsPage() {
       return;
     }
 
+    if (amountNum < selectedCurrency.minWithdrawal) {
+      toast.error(`Minimum withdrawal amount for ${selectedCurrency.name} is $${selectedCurrency.minWithdrawal.toFixed(2)}`);
+      return;
+    }
+
     if (amountNum > selectedCurrency.available) {
-      toast.error(`Insufficient balance. You have $${selectedCurrency.available.toFixed(2)} available.`);
+      toast.error(`Insufficient balance in ${selectedCurrency.name}. You have ${selectedCurrency.available.toFixed(2)} available.`);
+      return;
+    }
+
+    if (!selectedCurrency.accountId || selectedCurrency.accountId === 'Not Set') {
+      toast.error(`Please set your ${selectedCurrency.name} wallet address before requesting a withdrawal.`);
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3001/api/withdraw', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currencyId: selectedCurrency.id, amount: amountNum })
-      });
-      const data = await response.json();
+      const payload = {
+        currencyId: selectedCurrency.id,
+        currency: selectedCurrency.id,
+        amount: amountNum
+      };
 
-      if (data.success) {
-        toast.success(data.message);
-        setWithdrawAmount('');
-        if (data.data) {
-          setAccountBalance(data.data.accountBalance);
-          setPendingWithdrawals(data.data.pendingWithdrawals);
-          setCurrencies(prev => prev.map(c => {
-            const found = data.data.currencies.find(dc => dc.id === c.id);
-            return found ? { ...c, ...found } : c;
-          }));
-        }
-      } else {
-        toast.error(data.message || 'Withdrawal failed.');
-      }
-    } catch {
-      toast.error('You have no funds to withdraw.');
+      const res = await api.post('/withdraw', payload);
+      toast.success(res.data?.message || 'Withdrawal request submitted successfully!');
+      setWithdrawAmount('');
+      fetchWithdrawalData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit withdrawal request.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col justify-between">
@@ -220,82 +239,87 @@ export default function WithdrawFundsPage() {
             <div className="overflow-x-auto border border-slate-300 rounded-xs shadow-2xs">
               <table className="w-full text-left border-collapse text-xs sm:text-sm">
                 <thead>
-                  <tr className="bg-[#0085d0] text-white">
-                    <th className="py-2.5 px-3 w-8 border-r border-[#0072ce]/40 text-center"></th>
-                    <th className="py-2.5 px-3 font-semibold border-r border-[#0072ce]/40">
-                      Processing
-                    </th>
-                    <th className="py-2.5 px-3 font-semibold border-r border-[#0072ce]/40 text-center sm:text-left">
-                      Available
-                    </th>
-                    <th className="py-2.5 px-3 font-semibold border-r border-[#0072ce]/40 text-center sm:text-left">
-                      Pending
-                    </th>
-                    <th className="py-2.5 px-3 font-semibold">
-                      Account
-                    </th>
+                  <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-300 text-xs uppercase tracking-wider">
+                    <th className="py-2.5 px-3">Processing</th>
+                    <th className="py-2.5 px-3">Available</th>
+                    <th className="py-2.5 px-3">Pending</th>
+                    <th className="py-2.5 px-3">Account</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-200 bg-white">
                   {currencies.map((curr) => {
                     const isSelected = selectedCurrencyId === curr.id;
+                    const hasAddress = curr.accountId && curr.accountId !== 'Not Set';
+
                     return (
                       <tr 
                         key={curr.id}
                         onClick={() => setSelectedCurrencyId(curr.id)}
-                        className={`cursor-pointer transition-colors ${
-                          isSelected ? 'bg-blue-50/70' : 'hover:bg-slate-50/60'
+                        className={`transition-colors cursor-pointer ${
+                          isSelected ? 'bg-blue-50/60 font-semibold' : 'hover:bg-slate-50'
                         }`}
                       >
-                        {/* Radio Selector */}
-                        <td className="py-3 px-3 border-r border-slate-300 text-center">
-                          <input
-                            type="radio"
-                            name="selectedCurrency"
-                            checked={isSelected}
-                            onChange={() => setSelectedCurrencyId(curr.id)}
-                            className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0085d0] cursor-pointer"
-                          />
-                        </td>
-
-                        {/* Processing (Badge + Name) */}
-                        <td className="py-3 px-3 border-r border-slate-300">
+                        {/* Processing Column: Radio + Single Primary Icon + Name */}
+                        <td className="py-3 px-3">
                           <div className="flex items-center gap-2">
-                            <span className={`w-5 h-5 rounded-full ${curr.badgeColor} text-white flex items-center justify-center font-bold text-[11px] shadow-2xs shrink-0`}>
-                              {curr.badgeSymbol}
-                            </span>
-                            <span className="font-bold text-slate-800 tracking-tight text-xs sm:text-sm">
+                            <input
+                              type="radio"
+                              name="currencySelect"
+                              checked={isSelected}
+                              onChange={() => setSelectedCurrencyId(curr.id)}
+                              className="w-4 h-4 text-[#0085d0] border-slate-300 focus:ring-[#0072ce] cursor-pointer"
+                            />
+                            {curr.iconUrl ? (
+                              <img 
+                                src={curr.iconUrl} 
+                                alt={curr.name} 
+                                className="w-6 h-6 object-contain shrink-0" 
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                              />
+                            ) : (
+                              <span className={`w-6 h-6 rounded-full ${curr.badgeColor} text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs`}>
+                                {curr.badgeSymbol}
+                              </span>
+                            )}
+                            <span className="font-bold text-slate-800 text-xs sm:text-sm whitespace-nowrap">
                               {curr.name}
                             </span>
                           </div>
                         </td>
 
-                        {/* Available Balance (Green) */}
-                        <td className="py-3 px-3 border-r border-slate-300 font-bold text-[#00a651] whitespace-nowrap text-xs sm:text-sm">
+                        {/* Available Column */}
+                        <td className="py-3 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">
                           ${curr.available.toFixed(2)}
                         </td>
 
-                        {/* Pending Balance (Red) */}
-                        <td className="py-3 px-3 border-r border-slate-300 font-bold text-[#e11d48] whitespace-nowrap text-xs sm:text-sm">
+                        {/* Pending Column */}
+                        <td className="py-3 px-3 font-mono font-semibold text-slate-500 whitespace-nowrap">
                           ${curr.pending.toFixed(2)}
                         </td>
 
-                        {/* Account ID / Wallet Address */}
-                        <td className="py-3 px-3 text-slate-700">
-                          <div className="flex items-center justify-between gap-1 group">
-                            <span className="font-medium text-xs truncate max-w-[130px] sm:max-w-[170px]" title={curr.accountId}>
-                              Account ID: <strong className="text-slate-900">{curr.accountId || 'Not Set'}</strong>
-                            </span>
+                        {/* Account ID / Not Set Column */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            {hasAddress ? (
+                              <span className="font-mono text-xs text-slate-800 font-bold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded truncate max-w-[120px] sm:max-w-[160px]">
+                                {curr.accountId}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-amber-700 italic font-medium bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
+                                Not Set
+                              </span>
+                            )}
+
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleOpenEdit(curr);
                               }}
-                              className="text-slate-400 hover:text-[#0085d0] p-1 rounded transition-colors"
-                              title="Edit account wallet address"
+                              className="text-[#0085d0] hover:text-[#0072ce] font-bold text-xs underline underline-offset-2 ml-1 cursor-pointer flex items-center gap-0.5"
                             >
-                              <Edit3 className="w-3.5 h-3.5" />
+                              <Edit3 className="w-3 h-3" />
+                              <span>{hasAddress ? 'Edit' : 'Set'}</span>
                             </button>
                           </div>
                         </td>
@@ -306,8 +330,8 @@ export default function WithdrawFundsPage() {
               </table>
             </div>
 
-            {/* MESSAGE BELOW TABLE */}
-            <div className="pt-2 text-sm text-slate-600 font-normal">
+            {/* ELIGIBILITY STATUS MSG */}
+            <div className="bg-slate-50 border border-slate-200 rounded p-3 text-xs sm:text-sm font-medium">
               {accountBalance <= 0 ? (
                 <p className="text-slate-700">You have no funds to withdraw.</p>
               ) : (
@@ -317,7 +341,7 @@ export default function WithdrawFundsPage() {
               )}
             </div>
 
-            {/* WITHDRAWAL FORM (EXPANDS IF USER WANTS TO WITHDRAW) */}
+            {/* WITHDRAWAL FORM */}
             <div className="pt-4 border-t border-slate-200">
               <form onSubmit={handleWithdraw} className="space-y-4">
                 <div>
@@ -345,14 +369,21 @@ export default function WithdrawFundsPage() {
                 <div className="flex flex-wrap items-center gap-3 pt-1">
                   <button
                     type="submit"
-                    disabled={isSubmitting || selectedCurrency.available <= 0}
+                    disabled={isSubmitting || accountBalance <= 0}
                     className="flex-1 bg-[#0085d0] hover:bg-[#0072ce] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold py-3 px-6 rounded text-xs sm:text-sm tracking-wider uppercase transition-colors shadow-sm flex items-center justify-center cursor-pointer"
                   >
-                    {isSubmitting ? 'PROCESSING...' : 'REQUEST WITHDRAWAL'}
+                    {isSubmitting ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span>Submitting withdrawal request</span>
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      </span>
+                    ) : (
+                      'REQUEST WITHDRAWAL'
+                    )}
                   </button>
 
                   <Link
-                    href="/investments"
+                    href="/deposit-list"
                     className="py-3 px-4 rounded border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider transition-colors"
                   >
                     Deposit Funds
@@ -418,8 +449,8 @@ export default function WithdrawFundsPage() {
 
       {/* EDIT ACCOUNT WALLET MODAL */}
       {editingCurrency && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-200">
+        <div onClick={() => setEditingCurrency(null)} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-200 cursor-default">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
                 <Edit3 className="w-4 h-4 text-[#0085d0]" />
@@ -452,13 +483,13 @@ export default function WithdrawFundsPage() {
                 <button
                   type="button"
                   onClick={() => setEditingCurrency(null)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 rounded border border-slate-200"
+                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 rounded border border-slate-200 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-bold bg-[#0085d0] hover:bg-[#0072ce] text-white rounded uppercase tracking-wider transition-colors shadow-xs"
+                  className="px-5 py-2 text-xs font-bold bg-[#0085d0] hover:bg-[#0072ce] text-white rounded uppercase tracking-wider transition-colors shadow-xs cursor-pointer"
                 >
                   Save Address
                 </button>

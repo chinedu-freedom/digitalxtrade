@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import QRCode from 'qrcode';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 import { 
   ShieldCheck, 
   Copy, 
@@ -20,8 +20,11 @@ import HeaderNav from '@/components/HeaderNav';
 import SubNav from '@/components/SubNav';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
+import PageLoader from '@/components/PageLoader';
+import api from '@/lib/api';
 
 export default function SecurityPage() {
+  const [loading, setLoading] = useState(true);
   // IP Sensitivity: 'disabled' | 'medium' | 'high' | 'paranoic'
   const [ipSensitivity, setIpSensitivity] = useState('disabled');
   
@@ -54,10 +57,10 @@ export default function SecurityPage() {
       .then((url) => setQrCodeDataUrl(url))
       .catch((err) => console.error('Failed to generate QR code', err));
 
-    // Try fetching existing settings from backend
-    fetch('http://localhost:3001/api/security')
-      .then((res) => res.json())
-      .then((data) => {
+    // Fetch existing settings from database
+    api.get('/security')
+      .then((res) => {
+        const data = res.data;
         if (data && data.success && data.settings) {
           if (data.settings.ipSensitivity) setIpSensitivity(data.settings.ipSensitivity);
           if (data.settings.browserChange) setBrowserChange(data.settings.browserChange);
@@ -68,7 +71,10 @@ export default function SecurityPage() {
         }
       })
       .catch(() => {
-        // Backend not reached, keep default clean state
+        // Fallback default
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [secretCode]);
 
@@ -85,19 +91,14 @@ export default function SecurityPage() {
     e.preventDefault();
     setIsSavingSettings(true);
     try {
-      const response = await fetch('http://localhost:3001/api/security/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ipSensitivity, browserChange })
-      });
-      const data = await response.json();
-      if (data.success) {
-        toast.success(data.message || 'Security settings saved successfully!');
+      const res = await api.post('/security/settings', { ipSensitivity, browserChange });
+      if (res.data?.success) {
+        toast.success(res.data.message || 'Security settings saved successfully!');
       } else {
-        toast.success('Security settings updated locally.');
+        toast.error(res.data?.message || 'Failed to save settings');
       }
-    } catch {
-      toast.success('Security settings saved successfully.');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save security settings.');
     } finally {
       setIsSavingSettings(false);
     }
@@ -119,33 +120,30 @@ export default function SecurityPage() {
 
     setIsVerifying2FA(true);
     try {
-      const endpoint = is2FAEnabled 
-        ? 'http://localhost:3001/api/security/2fa/disable'
-        : 'http://localhost:3001/api/security/2fa/enable';
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: twoFactorToken.trim(), secretCode })
+      const endpoint = is2FAEnabled ? '/security/2fa/disable' : '/security/2fa/enable';
+      const res = await api.post(endpoint, {
+        token: twoFactorToken.trim(),
+        code: twoFactorToken.trim(),
+        secretCode
       });
-      const data = await response.json();
 
-      if (data.success) {
+      if (res.data?.success) {
         setIs2FAEnabled(!is2FAEnabled);
         setTwoFactorToken('');
-        toast.success(data.message);
+        toast.success(res.data.message || 'Two-Factor Authentication updated successfully!');
       } else {
-        toast.error(data.message || 'Verification failed. Please check the token.');
+        toast.error(res.data?.message || 'Verification failed. Please check the token.');
       }
-    } catch {
-      // Offline fallback toggle
-      setIs2FAEnabled(!is2FAEnabled);
-      setTwoFactorToken('');
-      toast.success(is2FAEnabled ? 'Two-Factor Authentication disabled' : 'Two-Factor Authentication enabled successfully!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Verification failed. Please check the token.');
     } finally {
       setIsVerifying2FA(false);
     }
   };
+
+  if (loading) {
+    return <PageLoader />;
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col justify-between">

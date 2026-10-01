@@ -6,8 +6,16 @@ import SubNav from '@/components/SubNav';
 import PersonalInformationSettings from '@/components/PersonalInformationSettings';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
+import PageLoader from '@/components/PageLoader';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsPage() {
+  const { user, loading } = useAuth();
+
+  if (loading || !user) {
+    return <PageLoader />;
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col justify-between">
       <HeaderNav />

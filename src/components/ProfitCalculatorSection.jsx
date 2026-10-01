@@ -3,18 +3,44 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
-const plans = [
-  { id: 'foundation', name: 'Foundation Plan', percent: 35.00, min: 50 },
-  { id: 'acceleration', name: 'Acceleration Plan', percent: 55.00, min: 5000 },
-  { id: 'stability', name: 'Stability Plan', percent: 85.00, min: 20000 },
-  { id: 'wealth', name: 'Wealth Plan', percent: 120.00, min: 50000 }
-];
-
 export default function ProfitCalculatorSection() {
-  const [selectedPlan, setSelectedPlan] = useState(plans[0]);
-  const [depositAmount, setDepositAmount] = useState(50);
+  const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [depositAmount, setDepositAmount] = useState(100);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('http://localhost:3001/api/deposit/plans')
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
+          const mapped = data.plans.map(p => {
+            const days = p.durationDays || 30;
+            const rate = Number(p.dailyProfit || p.profitNumber || 0);
+            const totalPct = p.isPromo ? rate : (rate * days);
+            return {
+              id: p.id,
+              name: p.name || p.title,
+              percent: totalPct,
+              dailyRate: rate,
+              min: Number(p.minAmount),
+              max: p.maxAmount ? Number(p.maxAmount) : Infinity,
+              isPromo: !!p.isPromo
+            };
+          });
+          setPlans(mapped);
+          setSelectedPlan(mapped[0]);
+          setDepositAmount(mapped[0].min);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch calculator plans:', err);
+      });
+
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,6 +53,7 @@ export default function ProfitCalculatorSection() {
   }, []);
 
   const calculateTotalReturn = () => {
+    if (!selectedPlan) return '0.00';
     const amount = Number(depositAmount) || 0;
     const returnAmount = amount * (1 + selectedPlan.percent / 100);
     return returnAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -54,7 +81,7 @@ export default function ProfitCalculatorSection() {
               onClick={() => setIsOpen(!isOpen)}
               className="w-full bg-white border border-slate-300 rounded-md px-4 py-3 text-slate-700 text-sm md:text-base font-medium flex items-center justify-between shadow-xs hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00529b]/20 transition-all cursor-pointer"
             >
-              <span>{selectedPlan.name}</span>
+              <span>{selectedPlan ? selectedPlan.name : 'Loading plans...'}</span>
               <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#00529b]' : ''}`} />
             </button>
 
@@ -62,13 +89,14 @@ export default function ProfitCalculatorSection() {
             {isOpen && (
               <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-lg shadow-xl z-30 overflow-hidden py-1 animate-in fade-in-80 zoom-in-95 duration-150">
                 {plans.map((plan) => {
-                  const isSelected = selectedPlan.id === plan.id;
+                  const isSelected = selectedPlan && selectedPlan.id === plan.id;
                   return (
                     <button
                       key={plan.id}
                       type="button"
                       onClick={() => {
                         setSelectedPlan(plan);
+                        setDepositAmount(plan.min);
                         setIsOpen(false);
                       }}
                       className={`w-full text-left px-4 py-2.5 text-sm font-medium flex items-center justify-between transition-colors ${
@@ -121,7 +149,7 @@ export default function ProfitCalculatorSection() {
               TOTAL PERCENT
             </span>
             <span className="block text-4xl md:text-5xl lg:text-6xl font-black text-[#00529b] tracking-tight">
-              {selectedPlan.percent.toFixed(2)}%
+              {selectedPlan ? selectedPlan.percent.toFixed(2) : '0.00'}%
             </span>
           </div>
         </div>

@@ -9,7 +9,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: '1999',
       text: (
         <>
-          digitalxtrade.vip launches the first <strong className="font-bold text-slate-800">remunerated deposit account</strong> in Italy, which soon becomes a fully-fledged current account.
+          digitalxtrade.com launches the first <strong className="font-bold text-slate-800">remunerated deposit account</strong> in Italy, which soon becomes a fully-fledged current account.
         </>
       )
     },
@@ -41,7 +41,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: '2014',
       text: (
         <>
-          On <strong className="font-bold text-slate-800">July 2</strong>, digitalxtrade.vip was listed on the Euronext Milan segment of the <strong className="font-bold text-slate-800">Italian stock market</strong>.
+          On <strong className="font-bold text-slate-800">July 2</strong>, digitalxtrade.com was listed on the Euronext Milan segment of the <strong className="font-bold text-slate-800">Italian stock market</strong>.
         </>
       )
     },
@@ -49,7 +49,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: '2016',
       text: (
         <>
-          On <strong className="font-bold text-slate-800">April 1</strong>, digitalxtrade.vip shares are listed in the FTSE MIB.
+          On <strong className="font-bold text-slate-800">April 1</strong>, digitalxtrade.com shares are listed in the FTSE MIB.
         </>
       )
     },
@@ -57,7 +57,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: '2017',
       text: (
         <>
-          digitalxtrade.vip listed on the <strong className="font-bold text-slate-800">Stoxx Europe 600</strong>, the index of large cap European companies. On 7 June it lands in the UK: trading and investment in a single multicurrency account.
+          digitalxtrade.com listed on the <strong className="font-bold text-slate-800">Stoxx Europe 600</strong>, the index of large cap European companies. On 7 June it lands in the UK: trading and investment in a single multicurrency account.
         </>
       )
     },
@@ -65,7 +65,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: '2018',
       text: (
         <>
-          <strong className="font-bold text-slate-800">digitalxtrade.vip Asset Management</strong> is born, an Irish company tasked with Funds of Funds management, through strategic partnership with the best international asset managers.
+          <strong className="font-bold text-slate-800">digitalxtrade.com Asset Management</strong> is born, an Irish company tasked with Funds of Funds management, through strategic partnership with the best international asset managers.
         </>
       )
     },
@@ -73,7 +73,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: '2019',
       text: (
         <>
-          <strong className="font-bold text-slate-800">digitalxtrade.vip turns 20</strong>. It leaves the UniCredit Group and becomes an <strong className="font-bold text-slate-800">independent public company</strong>.
+          <strong className="font-bold text-slate-800">digitalxtrade.com turns 20</strong>. It leaves the UniCredit Group and becomes an <strong className="font-bold text-slate-800">independent public company</strong>.
         </>
       )
     },
@@ -81,7 +81,7 @@ export default function AboutTimelineAndFiguresSection() {
       year: 'Today',
       text: (
         <>
-          With over 1.4 million clients and &euro;5.8 billion of net sales in 1H21, digitalxtrade.vip is one of leading FinTech platform on the international stage.
+          With over 1.4 million clients and &euro;5.8 billion of net sales in 1H21, digitalxtrade.com is one of leading FinTech platform on the international stage.
         </>
       )
     }

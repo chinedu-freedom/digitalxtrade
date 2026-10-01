@@ -1,47 +1,44 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function PremiumPricingSection() {
-  const plans = [
-    {
-      title: 'Foundation Plan',
-      dailyRoi: '2.8% DAILY FOR 30 DAYS',
-      amount: '$40.00 - $4999',
-      returnType: 'Principal return',
-      referral: 'Basic referral commission 5%',
-      representatives: 'Representatives 5%',
-      withdrawals: 'Instant withdrawals'
-    },
-    {
-      title: 'Acceleration Plan',
-      dailyRoi: '5.5% DAILY FOR 30 DAYS',
-      amount: '$5000 - $9999',
-      returnType: 'Principal return',
-      referral: 'Basic referral commission 5%',
-      representatives: 'Representatives 5%',
-      withdrawals: 'Instant withdrawals'
-    },
-    {
-      title: 'Stability Plan',
-      dailyRoi: '8.5% DAILY FOR 30 DAYS',
-      amount: '$10000 - $19999',
-      returnType: 'Principal return',
-      referral: 'Basic referral commission 5%',
-      representatives: 'Representatives 5%',
-      withdrawals: 'Instant withdrawals'
-    },
-    {
-      title: 'Wealth Plan',
-      dailyRoi: '10.5% DAILY FOR 30 DAYS',
-      amount: '$20000 - $0.00',
-      returnType: 'Principal return',
-      referral: 'Basic referral commission 5%',
-      representatives: 'Representatives 5%',
-      withdrawals: 'Instant withdrawals'
-    }
-  ];
+  const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch('http://localhost:3001/api/deposit/plans')
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && data.success && Array.isArray(data.plans)) {
+          const mapped = data.plans.map(p => {
+            const minStr = `$${Number(p.minAmount).toFixed(0)}`;
+            const maxStr = p.maxAmount ? `$${Number(p.maxAmount).toFixed(0)}` : '∞';
+            const dur = p.durationHours ? `${p.durationHours} HOURS` : `${p.durationDays || 30} DAYS`;
+            return {
+              title: p.name || p.title,
+              dailyRoi: `${p.dailyProfit || p.profitNumber}%${p.profitLabel ? ' ' + p.profitLabel.toUpperCase() : ' DAILY'} FOR ${dur}`,
+              amount: `${minStr} - ${maxStr}`,
+              returnType: 'Principal return',
+              referral: 'Basic referral commission 5%',
+              representatives: 'Representatives 5%',
+              withdrawals: 'Instant withdrawals'
+            };
+          });
+          setPlans(mapped);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch pricing plans:', err);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => { isMounted = false; };
+  }, []);
 
   return (
     <section id="investments" className="bg-[#f8fafd] py-20 border-b border-gray-200">
@@ -57,7 +54,7 @@ export default function PremiumPricingSection() {
           </p>
         </div>
 
-        {/* 4 Investment Blue Cards */}
+        {/* Investment Blue Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left max-w-6xl mx-auto pt-4">
           {plans.map((plan, idx) => (
             <div
