@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -20,6 +21,8 @@ export default function PersonalInformationSettings() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showRetypePassword, setShowRetypePassword] = useState(false);
 
   useEffect(() => {
     const loader = fetchUser || refreshUser;
@@ -146,12 +149,23 @@ export default function PersonalInformationSettings() {
                     New Password:
                   </td>
                   <td className="p-2.5 sm:p-3 bg-white">
-                    <input
-                      type="password"
-                      value={formData.newPassword}
-                      onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                      className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-slate-800 text-xs sm:text-sm focus:border-[#0085d0] focus:outline-none transition-all shadow-2xs"
-                    />
+                    <div className="relative flex items-center">
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={formData.newPassword}
+                        onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                        placeholder="Leave blank to keep current password"
+                        className="w-full bg-white border border-gray-300 rounded pl-3 pr-10 py-2 text-slate-800 text-xs sm:text-sm focus:border-[#0085d0] focus:outline-none transition-all shadow-2xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors p-1 cursor-pointer focus:outline-none"
+                        title={showNewPassword ? "Hide password" : "Show password"}
+                      >
+                        {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </td>
                 </tr>
 
@@ -161,12 +175,23 @@ export default function PersonalInformationSettings() {
                     Retype Password:
                   </td>
                   <td className="p-2.5 sm:p-3 bg-white">
-                    <input
-                      type="password"
-                      value={formData.retypePassword}
-                      onChange={(e) => setFormData({ ...formData, retypePassword: e.target.value })}
-                      className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-slate-800 text-xs sm:text-sm focus:border-[#0085d0] focus:outline-none transition-all shadow-2xs"
-                    />
+                    <div className="relative flex items-center">
+                      <input
+                        type={showRetypePassword ? 'text' : 'password'}
+                        value={formData.retypePassword}
+                        onChange={(e) => setFormData({ ...formData, retypePassword: e.target.value })}
+                        placeholder="Re-enter new password"
+                        className="w-full bg-white border border-gray-300 rounded pl-3 pr-10 py-2 text-slate-800 text-xs sm:text-sm focus:border-[#0085d0] focus:outline-none transition-all shadow-2xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRetypePassword(!showRetypePassword)}
+                        className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors p-1 cursor-pointer focus:outline-none"
+                        title={showRetypePassword ? "Hide password" : "Show password"}
+                      >
+                        {showRetypePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </td>
                 </tr>
 

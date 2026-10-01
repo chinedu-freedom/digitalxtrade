@@ -472,7 +472,6 @@ export default function TransactionsPage() {
                       assetIcon = '₿';
                       assetBg = 'bg-[#f7931a] text-white';
                     }
-                    }
 
                     const formattedAmount = `${isPositive ? '+' : '-'}$${parseFloat(trx.amount || 0).toFixed(2)}`;
                     const { dateStr, timeStr } = formatDateTwoLines(trx.created_at || trx.createdAt);

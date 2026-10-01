@@ -22,9 +22,13 @@ import SubNav from '@/components/SubNav';
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 import PageLoader from '@/components/PageLoader';
+import { useAuth } from '@/context/AuthContext';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import api from '@/lib/api';
 
 export default function WithdrawFundsPage() {
+  const { user } = useAuth();
+  const [walletType, setWalletType] = useState('deposit');
   const [accountBalance, setAccountBalance] = useState(0.00);
   const [pendingWithdrawals, setPendingWithdrawals] = useState(0.00);
   const [selectedCurrencyId, setSelectedCurrencyId] = useState('bitcoin');
@@ -184,7 +188,9 @@ export default function WithdrawFundsPage() {
       const payload = {
         currencyId: selectedCurrency.id,
         currency: selectedCurrency.id,
-        amount: amountNum
+        amount: amountNum,
+        walletType,
+        wallet_type: walletType
       };
 
       const res = await api.post('/withdraw', payload);
@@ -344,6 +350,37 @@ export default function WithdrawFundsPage() {
             {/* WITHDRAWAL FORM */}
             <div className="pt-4 border-t border-slate-200">
               <form onSubmit={handleWithdraw} className="space-y-4">
+                  {/* Select Source Wallet (Deposit vs Profit Balance) */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Withdraw From (Source Wallet)
+                    </label>
+                    <Select value={walletType} onValueChange={(val) => setWalletType(val)}>
+                      <SelectTrigger className="w-full bg-white border border-slate-300 rounded-lg h-12 px-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#0085d0]">
+                        <SelectValue placeholder="Select Source Wallet" />
+                      </SelectTrigger>
+                      <SelectContent searchable={false} className="bg-white border border-slate-200 shadow-xl rounded-lg">
+                        <SelectItem value="deposit" className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer">
+                          <div className="flex items-center justify-between w-full gap-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold">Deposit Balance</span>
+                              <span className="text-[10px] font-extrabold px-2 py-0.5 bg-blue-100 text-blue-800 rounded">Capital</span>
+                            </div>
+                            <span className="font-extrabold text-blue-600">${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)}</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="profit" className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer">
+                          <div className="flex items-center justify-between w-full gap-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold">Profit Balance</span>
+                              <span className="text-[10px] font-extrabold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">Earnings</span>
+                            </div>
+                            <span className="font-extrabold text-emerald-600">${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)}</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                     Withdrawal Amount ($ USD)
@@ -365,6 +402,32 @@ export default function WithdrawFundsPage() {
                     Selected asset: <strong className="text-slate-800">{selectedCurrency.name}</strong> (Destination: <span className="font-mono text-slate-700">{selectedCurrency.accountId}</span>)
                   </span>
                 </div>
+
+                {/* DYNAMIC FEE & NET PAYOUT SUMMARY */}
+                {withdrawAmount && !isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
+                  <div className={`p-3.5 rounded text-xs border ${walletType === 'deposit' ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-900'}`}>
+                    {walletType === 'deposit' ? (
+                      <div className="space-y-1">
+                        <div className="flex justify-between font-bold">
+                          <span>Early Capital Withdrawal Fee (50%):</span>
+                          <span className="text-amber-700">-${(parseFloat(withdrawAmount) * 0.50).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-extrabold text-sm border-t border-amber-200 pt-1 mt-1 text-slate-900">
+                          <span>Net Payout Amount:</span>
+                          <span className="text-emerald-600">${(parseFloat(withdrawAmount) * 0.50).toFixed(2)}</span>
+                        </div>
+                        <p className="text-[11px] text-amber-800 mt-1">
+                          ⚠️ Note: Capital withdrawals from Deposit Balance incur a 50% early withdrawal fee.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between items-center font-bold">
+                        <span>Withdrawal Fee (0%): <span className="text-emerald-600 font-normal">$0.00</span></span>
+                        <span>Net Payout: <span className="text-emerald-600 font-extrabold text-sm">${parseFloat(withdrawAmount).toFixed(2)}</span></span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex flex-wrap items-center gap-3 pt-1">
                   <button
@@ -430,7 +493,10 @@ export default function WithdrawFundsPage() {
               </div>
               <ul className="text-xs text-slate-300 space-y-2 list-disc pl-4 leading-relaxed">
                 <li>
-                  <strong className="text-white">Fee Structure:</strong> 0.00% platform commission on all Bitcoin, USDT, and Litecoin cashouts.
+                  <strong className="text-white">Profit Balance Payouts:</strong> 0.00% fee (100% of requested earnings are paid out).
+                </li>
+                <li>
+                  <strong className="text-white">Deposit Balance Payouts:</strong> 50.00% early capital withdrawal fee applies to capital redemptions.
                 </li>
                 <li>
                   <strong className="text-white">Processing Time:</strong> Automated processing dispatched within 1 - 60 minutes.
