@@ -291,6 +291,26 @@ export default function DepositListPage() {
                             <td className="py-3 px-4 font-bold text-emerald-600">
                               +${(parseFloat(dep.amount || 0) * (parseFloat(item.profitRate) / 100)).toFixed(2)} / cycle
                             </td>
+                            <td className="py-3 px-4 text-center">
+                              {(() => {
+                                const st = String(dep.status || '').toUpperCase();
+                                if (st === 'CANCELLED') {
+                                  return <span className="text-xs text-slate-400 font-semibold italic">Cancelled</span>;
+                                }
+                                if (st === 'COMPLETED') {
+                                  return <span className="text-xs text-slate-400 font-semibold italic">Matured</span>;
+                                }
+                                return (
+                                  <button
+                                    type="button"
+                                    onClick={() => setCancellingDep({ ...dep, planName: item.planName })}
+                                    className="inline-flex items-center gap-1 px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 text-xs font-bold rounded-md border border-rose-200 transition-colors cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                );
+                              })()}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -311,8 +331,14 @@ export default function DepositListPage() {
     
       {/* CANCELLATION CONFIRMATION MODAL */}
       {cancellingDep && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div
+          onClick={() => setCancellingDep(null)}
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200 cursor-default"
+          >
             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold text-slate-900">Cancel Investment</h3>
               <button
@@ -331,7 +357,7 @@ export default function DepositListPage() {
               
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 space-y-1 font-medium leading-relaxed">
                 <div className="font-bold flex items-center gap-1 text-amber-800">
-                  <span>⚠️ Early Release Policy</span>
+                  <span>Early Release Policy</span>
                 </div>
                 <div>
                   • You will receive a <strong>50% principal refund (${(parseFloat(cancellingDep.amount || 0) * 0.50).toFixed(2)})</strong> credited directly back to your balance.
