@@ -1,4 +1,5 @@
 'use client';
+import { getApiUrl } from '@/lib/api';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
@@ -12,7 +13,7 @@ export default function ProfitCalculatorSection() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch('http://localhost:3001/api/deposit/plans')
+    fetch(getApiUrl('/deposit/plans'))
       .then(res => res.json())
       .then(data => {
         if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {

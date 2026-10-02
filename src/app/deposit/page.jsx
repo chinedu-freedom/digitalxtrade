@@ -1,4 +1,5 @@
 'use client';
+import { getApiUrl } from '@/lib/api';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -95,7 +96,7 @@ export default function MakeDepositPage() {
     const fetchDepositPlans = async () => {
       try {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-        const response = await fetch('http://localhost:3001/api/deposit/plans', {
+        const response = await fetch(getApiUrl('/deposit/plans'), {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         if (response.ok) {
@@ -175,7 +176,7 @@ export default function MakeDepositPage() {
 
     const checkStatus = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/deposit/status/${pollId}`);
+        const res = await fetch(getApiUrl(`/deposit/status/${pollId}`));
         if (res.ok) {
           const data = await res.json();
           if (data && data.success && data.isConfirmed) {
@@ -291,7 +292,7 @@ export default function MakeDepositPage() {
     setIsProcessingSpend(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/deposit', {
+      const response = await fetch(getApiUrl('/deposit'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -392,7 +393,7 @@ export default function MakeDepositPage() {
 
     setIsConfirmingTx(true);
     try {
-      await fetch('http://localhost:3001/api/deposit/confirm', {
+      await fetch(getApiUrl('/deposit/confirm'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId: depositInvoice.id, txHash: txHashInput.trim() })

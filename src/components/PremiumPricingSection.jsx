@@ -1,4 +1,5 @@
 'use client';
+import { getApiUrl } from '@/lib/api';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -9,7 +10,7 @@ export default function PremiumPricingSection() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch('http://localhost:3001/api/deposit/plans')
+    fetch(getApiUrl('/deposit/plans'))
       .then(res => res.json())
       .then(data => {
         if (isMounted && data.success && Array.isArray(data.plans)) {

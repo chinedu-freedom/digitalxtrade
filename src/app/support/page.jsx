@@ -1,4 +1,5 @@
 'use client';
+import { getApiUrl } from '@/lib/api';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
@@ -19,7 +20,7 @@ export default function SupportPage() {
     if (!formData.name || !formData.email || !formData.message) return;
     try {
       setIsSubmitting(true);
-      const res = await fetch('http://localhost:3001/api/support', {
+      const res = await fetch(getApiUrl('/support'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
