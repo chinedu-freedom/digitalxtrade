@@ -163,18 +163,35 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('stakelab_token');
       localStorage.removeItem('impersonate_token');
       localStorage.removeItem('sec-prd-token');
+      localStorage.removeItem('digital_user_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      try {
+        sessionStorage.clear();
+      } catch (e) {}
 
       const isLocal = window.location.hostname.includes('localhost');
       const domainAttr = !isLocal ? '; domain=.everstake.cx' : '';
 
-      document.cookie = `stakelab_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainAttr}`;
-      document.cookie = `sec-prd-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainAttr}`;
-      document.cookie = 'stakelab_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      document.cookie = 'sec-prd-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      const cookiesToClear = [
+        'stakelab_token',
+        'sec-prd-token',
+        'digital_user_token',
+        'token'
+      ];
+
+      cookiesToClear.forEach((name) => {
+        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainAttr}`;
+      });
     }
     setUser(null);
     toast.info('Logged out successfully');
-    router.push('/login');
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    } else {
+      router.push('/login');
+    }
   };
 
   return (
