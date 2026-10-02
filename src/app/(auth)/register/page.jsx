@@ -49,7 +49,14 @@ export default function RegisterPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const ref = params.get('reference') || params.get('ref') || params.get('referral') || params.get('referral_code') || '';
+      let ref = params.get('reference') || params.get('ref') || params.get('referral') || params.get('referral_code') || '';
+      if (ref) {
+        localStorage.setItem('digital_ref', ref);
+        localStorage.setItem('stakelab_ref', ref);
+      } else {
+        ref = localStorage.getItem('digital_ref') || localStorage.getItem('stakelab_ref') || '';
+      }
+
       if (ref) {
         setReferralCode(ref);
         api.get(`/public/upline-info?code=${encodeURIComponent(ref)}`)
