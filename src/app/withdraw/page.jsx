@@ -363,21 +363,25 @@ export default function WithdrawFundsPage() {
                         <SelectItem 
                           value="deposit" 
                           label={`Deposit Balance ($${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)})`}
-                          className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer"
+                          className="py-2.5"
                         >
                           <div className="flex items-center justify-between w-full gap-4">
                             <span className="font-bold">Deposit Balance</span>
-                            <span className="font-extrabold text-blue-600">${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)}</span>
+                            <span className={`font-extrabold ${walletType === 'deposit' ? 'text-white' : 'text-blue-600'}`}>
+                              ${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)}
+                            </span>
                           </div>
                         </SelectItem>
                         <SelectItem 
                           value="profit" 
                           label={`Profit Balance ($${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)})`}
-                          className="py-2.5 text-slate-800 hover:bg-slate-50 cursor-pointer"
+                          className="py-2.5"
                         >
                           <div className="flex items-center justify-between w-full gap-4">
                             <span className="font-bold">Profit Balance</span>
-                            <span className="font-extrabold text-emerald-600">${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)}</span>
+                            <span className={`font-extrabold ${walletType === 'profit' ? 'text-white' : 'text-emerald-600'}`}>
+                              ${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)}
+                            </span>
                           </div>
                         </SelectItem>
                       </SelectContent>

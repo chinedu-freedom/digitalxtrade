@@ -209,14 +209,14 @@ export function SelectItem({ value, label, children, className = '' }) {
   return (
     <div
       onClick={() => handleSelect(value, labelText)}
-      className={`px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors flex items-center justify-between font-sans ${
+      className={`group px-4 py-2.5 text-xs font-semibold cursor-pointer transition-colors flex items-center justify-between font-sans ${
         isSelected
-          ? 'bg-[#0085d0] text-white font-bold'
-          : 'text-slate-700 hover:bg-slate-50 hover:text-[#0085d0]'
+          ? 'bg-[#0085d0] text-white font-bold hover:bg-[#0072ce] hover:text-white'
+          : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
       } ${className}`}
     >
-      <span className="truncate">{children}</span>
-      {isSelected && <Check className="w-4 h-4 text-white stroke-[3] shrink-0 ml-2" />}
+      <span className="truncate flex-1 min-w-0">{children}</span>
+      {isSelected && <Check className="w-4 h-4 text-white stroke-[3] shrink-0 ml-3" />}
     </div>
   );
 }
