@@ -435,11 +435,11 @@ export default function WithdrawFundsPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center gap-3 pt-1">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                   <button
                     type="submit"
                     disabled={isSubmitting || accountBalance <= 0}
-                    className="flex-1 bg-[#0085d0] hover:bg-[#0072ce] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold py-3 px-6 rounded text-xs sm:text-sm tracking-wider uppercase transition-colors shadow-sm flex items-center justify-center cursor-pointer"
+                    className="w-full sm:flex-1 bg-[#0085d0] hover:bg-[#0072ce] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold py-3.5 px-6 rounded text-xs sm:text-sm tracking-wider uppercase transition-colors shadow-sm flex items-center justify-center cursor-pointer text-center"
                   >
                     {isSubmitting ? (
                       <span className="inline-flex items-center gap-2">
@@ -453,7 +453,7 @@ export default function WithdrawFundsPage() {
 
                   <Link
                     href="/deposit-list"
-                    className="py-3 px-4 rounded border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs uppercase tracking-wider transition-colors"
+                    className="w-full sm:w-auto text-center py-3.5 px-6 rounded border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm uppercase tracking-wider transition-colors flex items-center justify-center"
                   >
                     Deposit Funds
                   </Link>

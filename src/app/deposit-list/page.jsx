@@ -12,7 +12,9 @@ import {
   CheckCircle2, 
   AlertCircle,
   HelpCircle,
-  Loader2
+  Loader2,
+  Wallet,
+  TrendingUp
 } from 'lucide-react';
 import HeaderNav from '@/components/HeaderNav';
 import SubNav from '@/components/SubNav';
@@ -153,26 +155,60 @@ export default function DepositListPage() {
       {/* CONTENT AREA */}
       <section className="py-8 md:py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
         
-        {/* PAGE TITLE & TOTAL */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#00529b] tracking-tight mb-3">
-            Deposits List
-          </h1>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        {/* PAGE TITLE & TOTAL ACTIVE DEPOSITS CARD */}
+        <div className="mb-8 space-y-4">
+          {/* Header Title with Subtitle and Desktop Action */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <span className="text-xs uppercase tracking-wider font-bold text-slate-500 block mb-1">
-                Total Active Deposits
-              </span>
-              <span className="text-2xl sm:text-3xl font-black text-slate-900">
-                ${totalDepositAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#00529b] tracking-tight">
+                Deposits List
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                Overview of your active investments, profit cycles, and portfolios.
+              </p>
             </div>
-            <div>
+            
+            {/* Desktop Quick Button */}
+            <div className="hidden sm:block">
               <Link
                 href="/deposit"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow transition-all cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Make a Deposit</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Stat Banner Card */}
+          <div className="bg-gradient-to-br from-white to-blue-50/50 border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-blue-100/80 text-[#0085d0] flex items-center justify-center shrink-0 shadow-2xs">
+                <Wallet className="w-6 h-6 stroke-[2]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Total Active Deposits
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Active
+                  </span>
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-0.5">
+                  ${totalDepositAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Action Button inside card */}
+            <div className="sm:hidden pt-3 border-t border-slate-200/60">
+              <Link
+                href="/deposit"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#0085d0] hover:bg-[#0072ce] text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
                 <span>Make a Deposit</span>
               </Link>
             </div>
