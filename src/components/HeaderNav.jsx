@@ -198,38 +198,6 @@ export default function HeaderNav() {
                 </Link>
               );
             })}
-
-            {user && (
-              <>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 pt-4 pb-1">
-                  Portal Links
-                </div>
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#0085d0] transition-colors"
-                >
-                  <span>Trading Dashboard</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
-                </Link>
-                <Link
-                  href="/deposit"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#0085d0] transition-colors"
-                >
-                  <span>Make Deposit</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
-                </Link>
-                <Link
-                  href="/withdraw"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-[#0085d0] transition-colors"
-                >
-                  <span>Withdraw Funds</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
-                </Link>
-              </>
-            )}
           </div>
 
           {/* Drawer Action Buttons (Slid in with Drawer) */}

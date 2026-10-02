@@ -513,16 +513,16 @@ export default function MakeDepositPage() {
             </div>
 
             {/* DEPOSIT METHOD TYPE SELECTOR (AUTOMATIC VS MANUAL) */}
-            <div className="bg-slate-50 p-3 sm:p-3.5 rounded-lg border border-slate-300 flex flex-row items-center justify-between gap-4 shadow-2xs">
-              <div className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2 shrink-0">
+            <div className="bg-slate-50 p-3 sm:p-3.5 rounded-lg border border-slate-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-2xs">
+              <div className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span className="text-[#0085d0]">⚡</span>
                 <span>Select Deposit Type:</span>
               </div>
-              <div className="inline-flex rounded-md p-1 bg-slate-200/80 border border-slate-300 text-xs font-bold shrink-0">
+              <div className="grid grid-cols-2 w-full sm:w-auto sm:inline-flex rounded-md p-1 bg-slate-200/80 border border-slate-300 text-xs font-bold gap-1 sm:gap-0">
                 <button
                   type="button"
                   onClick={() => setDepositMode('automatic')}
-                  className={`px-3.5 sm:px-5 py-1.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`w-full sm:w-auto px-3 sm:px-5 py-2 sm:py-1.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
                     depositMode === 'automatic'
                       ? 'bg-[#0085d0] text-white shadow-xs'
                       : 'text-slate-700 hover:text-slate-900'
@@ -533,7 +533,7 @@ export default function MakeDepositPage() {
                 <button
                   type="button"
                   onClick={() => setDepositMode('manual')}
-                  className={`px-3.5 sm:px-5 py-1.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`w-full sm:w-auto px-3 sm:px-5 py-2 sm:py-1.5 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center ${
                     depositMode === 'manual'
                       ? 'bg-[#0085d0] text-white shadow-xs'
                       : 'text-slate-700 hover:text-slate-900'
