@@ -28,6 +28,8 @@ export default function Footer() {
           <Link href="/faq" className="hover:underline transition-all">FAQ</Link>
           <span className="text-white/60 font-light">|</span>
           <Link href="/support" className="hover:underline transition-all">Support</Link>
+          <span className="text-white/60 font-light">|</span>
+          <Link href="/terms-of-service" className="hover:underline transition-all">Terms & Services</Link>
         </div>
 
         {/* Registered Office */}

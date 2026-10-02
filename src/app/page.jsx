@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import HeaderNav from '@/components/HeaderNav';
 import HeroSection from '@/components/HeroSection';
 import CryptoTicker from '@/components/CryptoTicker';
@@ -21,6 +22,26 @@ import Footer from '@/components/Footer';
 import FloatingWidgets from '@/components/FloatingWidgets';
 
 export default function UserHomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const action = params.get('a');
+      if (action === 'rules') {
+        router.replace('/terms-of-service');
+      } else if (action === 'faq') {
+        router.replace('/faq');
+      } else if (action === 'support') {
+        router.replace('/support');
+      } else if (action === 'signup' || action === 'register') {
+        router.replace('/register');
+      } else if (action === 'login') {
+        router.replace('/login');
+      }
+    }
+  }, [router]);
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-sky-500 selection:text-white">
       {/* Header Navigation Bar */}
