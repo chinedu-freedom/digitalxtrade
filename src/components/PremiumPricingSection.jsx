@@ -13,10 +13,11 @@ export default function PremiumPricingSection() {
       .then(res => res.json())
       .then(data => {
         if (isMounted && data.success && Array.isArray(data.plans)) {
-          const mapped = data.plans.map(p => {
+          const targetPlans = data.plans.length > 4 ? data.plans.slice(-4) : data.plans;
+          const mapped = targetPlans.map(p => {
             const minStr = `$${Number(p.minAmount).toFixed(0)}`;
             const maxStr = p.maxAmount ? `$${Number(p.maxAmount).toFixed(0)}` : '∞';
-            const dur = p.durationHours ? `${p.durationHours} HOURS` : `${p.durationDays || 30} DAYS`;
+            const dur = `${p.durationDays || 30} DAYS`;
             return {
               title: p.name || p.title,
               dailyRoi: `${p.dailyProfit || p.profitNumber}%${p.profitLabel ? ' ' + p.profitLabel.toUpperCase() : ' DAILY'} FOR ${dur}`,

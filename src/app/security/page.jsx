@@ -43,21 +43,8 @@ export default function SecurityPage() {
   const [isVerifying2FA, setIsVerifying2FA] = useState(false);
   const [showAppModal, setShowAppModal] = useState(false);
 
-  // Generate QR Code on mount
+  // Fetch existing settings from database on mount
   useEffect(() => {
-    const otpAuthUrl = `otpauth://totp/DigitalXTrade:user?secret=${secretCode}&issuer=DigitalXTrade`;
-    QRCode.toDataURL(otpAuthUrl, {
-      width: 190,
-      margin: 1,
-      color: {
-        dark: '#000000',
-        light: '#ffffff'
-      }
-    })
-      .then((url) => setQrCodeDataUrl(url))
-      .catch((err) => console.error('Failed to generate QR code', err));
-
-    // Fetch existing settings from database
     api.get('/security')
       .then((res) => {
         const data = res.data;
@@ -70,12 +57,28 @@ export default function SecurityPage() {
           if (data.settings.secretCode) setSecretCode(data.settings.secretCode);
         }
       })
-      .catch(() => {
-        // Fallback default
+      .catch((err) => {
+        console.warn('Could not fetch security settings, using defaults', err);
       })
       .finally(() => {
         setLoading(false);
       });
+  }, []);
+
+  // Generate QR Code whenever secretCode is available or changes
+  useEffect(() => {
+    if (!secretCode) return;
+    const otpAuthUrl = `otpauth://totp/DigitalXTrade:user?secret=${secretCode}&issuer=DigitalXTrade`;
+    QRCode.toDataURL(otpAuthUrl, {
+      width: 190,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    })
+      .then((url) => setQrCodeDataUrl(url))
+      .catch((err) => console.error('Failed to generate QR code', err));
   }, [secretCode]);
 
   // Handle Copy Secret Code

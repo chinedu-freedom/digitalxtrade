@@ -16,7 +16,8 @@ export default function ProfitCalculatorSection() {
       .then(res => res.json())
       .then(data => {
         if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
-          const mapped = data.plans.map(p => {
+          const targetPlans = data.plans.length > 4 ? data.plans.slice(-4) : data.plans;
+          const mapped = targetPlans.map(p => {
             const days = p.durationDays || 30;
             const rate = Number(p.dailyProfit || p.profitNumber || 0);
             const totalPct = p.isPromo ? rate : (rate * days);

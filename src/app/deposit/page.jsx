@@ -124,9 +124,10 @@ export default function MakeDepositPage() {
                   maxAmount: p.maxAmount ? Number(p.maxAmount) : Infinity,
                   profitRate: p.profitRate || (Number(p.dailyProfit).toFixed(2) + '%'),
                   profitNumber: Number(p.dailyProfit || p.profitNumber || 0),
-                  profitLabel: p.profitLabel || p.profitType || 'Daily Profit (%)',
+                  profitLabel: p.profitLabel || (p.paymentPeriod?.toLowerCase() === 'hourly' ? 'Hourly Profit (%)' : (p.profitType || 'Daily Profit (%)')),
+                  paymentPeriod: p.paymentPeriod || p.payment_period || 'Daily',
                   durationDays: p.durationDays || 30,
-                  durationHours: p.durationHours,
+                  duration: `${p.durationDays || 30} Days`,
                   isPromo: !!p.isPromo
                 };
               });
