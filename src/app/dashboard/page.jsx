@@ -20,6 +20,8 @@ import {
   ShieldCheck, 
   Wallet,
   Clock,
+  ChevronLeft,
+  ChevronRight,
   Megaphone
 } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -34,6 +36,8 @@ function DashboardContent() {
   const [lastAccessTime, setLastAccessTime] = useState('');
   const [origin, setOrigin] = useState('https://digitalxtrade.com');
   const [isCopied, setIsCopied] = useState(false);
+  const [trxPage, setTrxPage] = useState(1);
+  const trxPageSize = 10;
 
   // Dynamic Dashboard Stats State
   const [statsLoading, setStatsLoading] = useState(true);
@@ -123,6 +127,10 @@ function DashboardContent() {
     toast.success('Referral link copied to clipboard!');
     setTimeout(() => setIsCopied(false), 2500);
   };
+
+    const allTransactions = dashboardData.transactions || [];
+  const totalTrxPages = Math.ceil(allTransactions.length / trxPageSize) || 1;
+  const paginatedTransactions = allTransactions.slice((trxPage - 1) * trxPageSize, trxPage * trxPageSize);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f4f7f9] text-slate-800 font-sans">
@@ -310,7 +318,7 @@ function DashboardContent() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-200">
-                        {dashboardData.transactions.map((trx) => {
+                        {paginatedTransactions.map((trx) => {
                           const rawType = (trx.type || '').toUpperCase();
                           const isPositive = !['WITHDRAWAL', 'ADMIN_DEBIT', 'STAKE', 'DEBIT'].includes(rawType);
                           const formattedAmount = `${isPositive ? '+' : '-'}$${parseFloat(trx.amount || 0).toFixed(2)}`;

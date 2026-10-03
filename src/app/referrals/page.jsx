@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   ExternalLink,
   Search,
+  ChevronLeft,
   ChevronRight,
   Filter,
   X,
@@ -56,6 +57,8 @@ export default function ReferralsPage() {
 
   // Filter States
   const [searchFilter, setSearchFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [levelFilter, setLevelFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('All');
@@ -207,6 +210,9 @@ export default function ReferralsPage() {
     return true;
   });
 
+  const totalPages = Math.ceil(filteredReferrals.length / pageSize) || 1;
+  const paginatedReferrals = filteredReferrals.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   if (loading) {
     return <PageLoader />;
   }
@@ -343,7 +349,7 @@ export default function ReferralsPage() {
               <input
                 type="text"
                 value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
+                onChange={(e) => { setSearchFilter(e.target.value); setCurrentPage(1); }}
                 placeholder="Search by username..."
                 className="w-full h-10 bg-slate-50 border border-slate-300 focus:border-[#0085d0] focus:ring-2 focus:ring-[#0085d0]/20 rounded-lg pl-9 pr-8 text-sm text-slate-900 font-medium transition-all outline-none shadow-2xs"
               />
@@ -393,7 +399,7 @@ export default function ReferralsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredReferrals.map((item) => (
+                  paginatedReferrals.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
                       {/* Username Column */}
                       <td className="py-3.5 px-4 font-extrabold text-slate-900 text-sm sm:text-base">
@@ -428,6 +434,36 @@ export default function ReferralsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* PAGINATION CONTROLS */}
+          {filteredReferrals.length > pageSize && (
+            <div className="bg-slate-50/80 px-4 py-3 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+              <div className="text-slate-500 font-medium">
+                Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredReferrals.length)} of {filteredReferrals.length} referred members
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  className="px-3 py-1.5 rounded border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>Prev</span>
+                </button>
+                <span className="font-bold text-slate-800 px-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  className="px-3 py-1.5 rounded border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Next</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
       </section>
