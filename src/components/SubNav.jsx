@@ -18,6 +18,7 @@ export default function SubNav({ activeTab = 'ACCOUNT', adminNote }) {
     { label: 'DEPOSITS LIST', path: '/deposit-list' },
     { label: 'TRANSACTIONS', path: '/transactions' },
     { label: 'REFERRALS', path: '/referrals' },
+    { label: 'BONUS CODE', path: '/bonus-code' },
     { label: 'SETTINGS', path: '/settings' },
     { label: 'LOGOUT', action: logout },
   ];
