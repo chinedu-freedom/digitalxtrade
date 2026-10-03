@@ -1,5 +1,7 @@
 'use client';
 
+import TablePagination from '@/components/TablePagination';
+
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -25,8 +27,8 @@ import {
   Activity,
   Loader2
 } from 'lucide-react';
-import HeaderNav from '@/components/HeaderNav';
-import SubNav from '@/components/SubNav';
+import UserHeader from '@/components/UserHeader';
+
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 import PageLoader from '@/components/PageLoader';
@@ -219,8 +221,8 @@ export default function ReferralsPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col justify-between">
-      <HeaderNav />
-      <SubNav activeTab="REFERRALS" />
+      <UserHeader activeTab="REFERRALS" />
+
 
       {/* MAIN CONTAINER */}
       <section className="py-8 md:py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full space-y-6">
@@ -435,35 +437,13 @@ export default function ReferralsPage() {
             </table>
           </div>
 
-          {/* PAGINATION CONTROLS */}
-          {filteredReferrals.length > pageSize && (
-            <div className="bg-slate-50/80 px-4 py-3 rounded-lg border border-slate-200 flex items-center justify-between text-xs">
-              <div className="text-slate-500 font-medium">
-                Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredReferrals.length)} of {filteredReferrals.length} referred members
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className="px-3 py-1.5 rounded border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  <span>Prev</span>
-                </button>
-                <span className="font-bold text-slate-800 px-2">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className="px-3 py-1.5 rounded border border-slate-300 bg-white font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Next</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          )}
+          <TablePagination
+            currentPage={currentPage}
+            totalItems={filteredReferrals.length}
+            pageSize={pageSize}
+            onPageChange={(pg) => setCurrentPage(pg)}
+            itemLabel="referred members"
+          />
         </div>
 
       </section>

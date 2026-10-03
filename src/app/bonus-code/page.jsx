@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import HeaderNav from '../../components/HeaderNav';
-import SubNav from '../../components/SubNav';
+import UserHeader from '../../components/UserHeader';
+
 import FloatingWidgets from '../../components/FloatingWidgets';
 import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
@@ -70,8 +70,8 @@ export default function BonusCodePage() {
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      <HeaderNav />
-      <SubNav activeTab="BONUS CODE" />
+      <UserHeader activeTab="BONUS CODE" />
+
 
       <div className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6 sm:space-y-8">
         {/* Header Hero Banner */}

@@ -1,5 +1,7 @@
 'use client';
 
+import TablePagination from '@/components/TablePagination';
+
 import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
