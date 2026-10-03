@@ -3,15 +3,33 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Shield, User, LogIn, UserPlus, LogOut, ChevronRight } from 'lucide-react';
+import { 
+  Menu, 
+  X, 
+  Shield, 
+  User, 
+  LogIn, 
+  UserPlus, 
+  LogOut, 
+  ChevronRight,
+  LayoutDashboard,
+  PlusCircle,
+  ArrowUpRight,
+  Layers,
+  Receipt,
+  Users,
+  Gift,
+  Settings,
+  Wallet
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function HeaderNav() {
+export default function HeaderNav({ isNested = false }) {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Prevent background scrolling when mobile drawer is open
+  // Prevent background scrolling when sidebar drawer is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -39,58 +57,49 @@ export default function HeaderNav() {
     { label: 'Support', href: '/support' },
   ];
 
+  const userAccountTabs = [
+    { label: 'ACCOUNT', href: '/dashboard', icon: LayoutDashboard },
+    { label: 'MAKE DEPOSIT', href: '/deposit', icon: PlusCircle },
+    { label: 'WITHDRAW FUNDS', href: '/withdraw', icon: ArrowUpRight },
+    { label: 'DEPOSITS LIST', href: '/deposit-list', icon: Layers },
+    { label: 'TRANSACTIONS', href: '/transactions', icon: Receipt },
+    { label: 'REFERRALS', href: '/referrals', icon: Users },
+    { label: 'BONUS CODE', href: '/bonus-code', icon: Gift },
+    { label: 'SETTINGS', href: '/security', icon: Settings },
+  ];
+
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-xs font-sans">
+      <header className={`${isNested ? 'w-full' : 'sticky top-0 z-40'} bg-white border-b border-gray-100 shadow-xs font-sans`}>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-16 h-16 sm:h-20 flex items-center justify-between">
           
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+          {/* Logo Section */}
+          <Link href="/" className="flex items-center gap-3 group">
             <img
               src="/logo.jpeg"
               alt="DigitalXTrade Logo"
-              className="w-8 h-8 sm:w-10 sm:h-10 aspect-square object-cover shrink-0 transition-transform group-hover:scale-105 duration-300 rounded"
+              className="w-8 h-8 sm:w-10 sm:h-10 aspect-square object-cover rounded-md shadow-2xs group-hover:scale-105 transition-transform"
             />
-            <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-black tracking-wider text-slate-900 leading-none">
-                DIGITAL<span className="text-[#0085d0]">X</span>TRADE
-              </span>
-            </div>
+            <span className="text-lg sm:text-xl font-black tracking-wider text-slate-900 font-sans">
+              DIGITAL<span className="text-[#0085d0]">X</span>TRADE
+            </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-10">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={`text-sm font-bold transition-colors ${
-                    isActive ? 'text-[#0085d0]' : 'text-slate-700 hover:text-[#0085d0]'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Right Action Area */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Desktop Action Buttons (Hidden on Mobile) */}
+          {/* Header Right Action & Hamburger Menu */}
+          <div className="flex items-center gap-3">
+            {/* Desktop Action Buttons */}
             <div className="hidden md:flex items-center gap-3">
               {user ? (
                 <>
                   <Link
                     href="/security"
-                    className="border border-[#0085d0] text-[#0085d0] hover:bg-slate-50 transition-all px-5 py-2 rounded text-xs font-black tracking-wider uppercase flex items-center justify-center shadow-xs"
+                    className="border border-[#0085d0] text-[#0085d0] hover:bg-slate-50 transition-all px-4 py-2 rounded text-xs font-black tracking-wider uppercase flex items-center justify-center shadow-xs"
                   >
                     2FA
                   </Link>
                   <Link
                     href="/dashboard"
-                    className="bg-[#0085d0] hover:bg-[#0072ce] text-white transition-all px-6 py-2 rounded text-xs font-black tracking-wider uppercase shadow-sm"
+                    className="bg-[#0085d0] hover:bg-[#0072ce] text-white transition-all px-5 py-2 rounded text-xs font-black tracking-wider uppercase shadow-sm"
                   >
                     ACCOUNT
                   </Link>
@@ -102,10 +111,6 @@ export default function HeaderNav() {
                     className="border border-[#0085d0] text-[#0085d0] hover:bg-slate-50 transition-all px-4 py-2 rounded text-xs font-black tracking-wider uppercase flex items-center gap-1.5 shadow-xs group"
                   >
                     <span>LOGIN</span>
-                    <svg className="w-3.5 h-3.5 text-[#0085d0] transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 4h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-3" />
-                      <path d="M4 12h10M10 8l4 4-4 4" />
-                    </svg>
                   </Link>
                   <Link
                     href="/register"
@@ -117,47 +122,48 @@ export default function HeaderNav() {
               )}
             </div>
 
-            {/* Mobile Hamburger Toggle Button (Shown on Mobile, Replaces the Two Buttons) */}
+            {/* Hamburger Toggle Button (Slid-in Drawer Trigger for Mobile & Desktop) */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-slate-800 hover:text-[#0085d0] hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0085d0]/30"
-              aria-label="Open mobile menu"
+              className="flex items-center justify-center w-10 h-10 rounded-xl text-slate-800 hover:text-[#0085d0] hover:bg-slate-100 transition-all focus:outline-none cursor-pointer"
+              aria-label="Open sidebar menu"
+              title="Menu navigation"
             >
-              <Menu className="w-6 h-6 stroke-[2.2]" />
+              <Menu className="w-6 h-6 stroke-[2.5]" />
             </button>
           </div>
 
         </div>
       </header>
 
-      {/* Slide-In Mobile Navigation Drawer & Backdrop */}
+      {/* Slide-In Navigation Sidebar Drawer & Backdrop */}
       <div
-        className={`fixed inset-0 z-50 md:hidden transition-visibility duration-300 ${
+        className={`fixed inset-0 z-50 transition-visibility duration-300 ${
           mobileMenuOpen ? 'visible' : 'invisible pointer-events-none'
         }`}
       >
         {/* Darkened Backdrop Overlay */}
         <div
           onClick={() => setMobileMenuOpen(false)}
-          className={`fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${
+          className={`fixed inset-0 bg-slate-950/70 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${
             mobileMenuOpen ? 'opacity-100' : 'opacity-0'
           }`}
         />
 
         {/* Slide-in Drawer Container */}
         <aside
-          className={`fixed top-0 right-0 bottom-0 w-[82%] max-w-[320px] bg-white shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out z-10 ${
+          className={`fixed top-0 right-0 bottom-0 w-[85%] max-w-[340px] bg-white shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out z-10 ${
             mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
           {/* Drawer Header */}
-          <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div className="flex items-center gap-2.5">
               <img
                 src="/logo.jpeg"
                 alt="DigitalXTrade Logo"
-                className="w-7 h-7 aspect-square object-cover rounded"
+                className="w-8 h-8 aspect-square object-cover rounded-md shadow-2xs"
               />
               <span className="text-base font-black tracking-wider text-slate-900">
                 DIGITAL<span className="text-[#0085d0]">X</span>TRADE
@@ -167,57 +173,121 @@ export default function HeaderNav() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-200/60 transition-colors cursor-pointer"
               aria-label="Close menu"
             >
               <X className="w-5 h-5 stroke-[2.5]" />
             </button>
           </div>
 
-          {/* Drawer Navigation Links */}
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-3 py-1">
-              Menu Navigation
+          {/* Drawer Content Area */}
+          <div className="flex-1 overflow-y-auto px-4 py-5 space-y-6">
+
+            {/* LOGGED-IN USER ACCOUNT SUBNAV SECTION */}
+            {user ? (
+              <div className="space-y-3">
+                {/* User Info Card */}
+                <div className="bg-gradient-to-br from-blue-50/80 to-slate-50 border border-blue-100 p-3.5 rounded-xl flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#0085d0] text-white flex items-center justify-center font-black text-sm uppercase shrink-0 shadow-sm">
+                    {(user?.username || user?.fullName || 'U').charAt(0)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-extrabold text-sm text-slate-900 truncate">
+                      {user?.fullName || user?.username || 'Account User'}
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 truncate">
+                      {user?.email || 'Active Member'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-[10px] font-black uppercase tracking-widest text-[#0085d0] px-2 pt-1">
+                  ACCOUNT NAVIGATION MENU
+                </div>
+
+                <div className="space-y-1">
+                  {userAccountTabs.map((item) => {
+                    const IconComp = item.icon;
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-extrabold tracking-wide uppercase transition-all ${
+                          isActive
+                            ? 'bg-[#0085d0] text-white shadow-sm'
+                            : 'text-slate-800 hover:bg-blue-50/70 hover:text-[#0085d0]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#0085d0]'}`} />
+                          <span>{item.label}</span>
+                        </div>
+                        <ChevronRight className={`w-3.5 h-3.5 ${isActive ? 'text-white/80' : 'text-slate-400'}`} />
+                      </Link>
+                    );
+                  })}
+
+                  {/* LOGOUT BUTTON INSIDE SIDEBAR */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-extrabold tracking-wide uppercase text-rose-600 hover:bg-rose-50 transition-all cursor-pointer mt-2 border border-rose-100"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <LogOut className="w-4 h-4 text-rose-600" />
+                      <span>LOGOUT</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-rose-400" />
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {/* MAIN NAVIGATION LINKS */}
+            <div className="space-y-2">
+              <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">
+                MAIN NAVIGATION
+              </div>
+
+              <div className="space-y-1">
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        isActive
+                          ? 'bg-slate-100 text-[#0085d0]'
+                          : 'text-slate-700 hover:bg-slate-50 hover:text-[#0085d0]'
+                      }`}
+                    >
+                      <span>{link.label}</span>
+                      <ChevronRight className="w-4 h-4 text-slate-400" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
 
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-3 rounded-lg text-sm font-bold transition-all ${
-                    isActive
-                      ? 'bg-blue-50 text-[#0085d0]'
-                      : 'text-slate-700 hover:bg-slate-50 hover:text-[#0085d0]'
-                  }`}
-                >
-                  <span>{link.label}</span>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
-                </Link>
-              );
-            })}
           </div>
 
-          {/* Drawer Action Buttons (Slid in with Drawer) */}
-          <div className="p-5 border-t border-slate-100 bg-slate-50/70 space-y-2.5">
+          {/* Drawer Footer Action Buttons */}
+          <div className="p-4 border-t border-slate-100 bg-slate-50/80 space-y-2">
             {user ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-[#0085d0] hover:bg-[#0072ce] text-white py-3 px-4 rounded-lg text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-sm transition-all"
-                >
-                  <User className="w-4 h-4" />
-                  <span>ACCOUNT PORTAL</span>
-                </Link>
+              <div className="flex items-center gap-2">
                 <Link
                   href="/security"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-white border border-[#0085d0] text-[#0085d0] hover:bg-blue-50/50 py-2.5 px-4 rounded-lg text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-2xs transition-all"
+                  className="flex-1 bg-white border border-slate-300 hover:border-[#0085d0] text-slate-800 hover:text-[#0085d0] py-2.5 px-3 rounded-xl text-xs font-black tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-2xs transition-all"
                 >
-                  <Shield className="w-4 h-4" />
+                  <Shield className="w-3.5 h-3.5 text-[#0085d0]" />
                   <span>2FA SECURITY</span>
                 </Link>
                 <button
@@ -226,18 +296,18 @@ export default function HeaderNav() {
                     setMobileMenuOpen(false);
                     logout();
                   }}
-                  className="w-full text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                  className="bg-rose-50 text-rose-600 hover:bg-rose-100 py-2.5 px-4 rounded-xl text-xs font-black tracking-wider uppercase flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-rose-200"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span>Log out</span>
+                  <span>EXIT</span>
                 </button>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="space-y-2">
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-[#0085d0] hover:bg-[#0072ce] text-white py-3 px-4 rounded-lg text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-sm transition-all"
+                  className="w-full bg-[#0085d0] hover:bg-[#0072ce] text-white py-3 px-4 rounded-xl text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>OPEN ACCOUNT</span>
@@ -245,12 +315,12 @@ export default function HeaderNav() {
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full bg-white border border-[#0085d0] text-[#0085d0] hover:bg-blue-50/50 py-2.5 px-4 rounded-lg text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-2xs transition-all"
+                  className="w-full bg-white border border-[#0085d0] text-[#0085d0] hover:bg-blue-50/50 py-2.5 px-4 rounded-xl text-xs font-black tracking-wider uppercase flex items-center justify-center gap-2 shadow-2xs transition-all"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>LOGIN</span>
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </aside>

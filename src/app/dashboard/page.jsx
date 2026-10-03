@@ -4,8 +4,8 @@ import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import HeaderNav from '../../components/HeaderNav';
-import SubNav from '../../components/SubNav';
+import UserHeader from '../../components/UserHeader';
+
 import Footer from '../../components/Footer';
 import PageLoader from '../../components/PageLoader';
 import PersonalInformationSettings from '../../components/PersonalInformationSettings';
@@ -135,10 +135,10 @@ function DashboardContent() {
   return (
     <div className="min-h-screen flex flex-col bg-[#f4f7f9] text-slate-800 font-sans">
       {/* Primary Header Navigation Bar */}
-      <HeaderNav />
+      <UserHeader activeTab={activeTab} adminNote={dashboardData.adminNote} />
 
       {/* Secondary Dashboard Sub-Navigation Bar with Moving Notice Ticker */}
-      <SubNav activeTab={activeTab} adminNote={dashboardData.adminNote} />
+
 
       {/* Main Dashboard Workspace Content */}
       <main className="flex-1 max-w-[1300px] w-full mx-auto px-4 sm:px-8 py-8 space-y-8">

@@ -19,8 +19,8 @@ import {
   Sparkles,
   Loader2
 } from 'lucide-react';
-import HeaderNav from '@/components/HeaderNav';
-import SubNav from '@/components/SubNav';
+import UserHeader from '@/components/UserHeader';
+
 import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 import PageLoader from '@/components/PageLoader';
@@ -416,8 +416,8 @@ export default function MakeDepositPage() {
 
   return (
     <main className="min-h-screen bg-white font-sans text-slate-900 flex flex-col justify-between">
-      <HeaderNav />
-      <SubNav activeTab="MAKE DEPOSIT" />
+      <UserHeader activeTab="MAKE DEPOSIT" />
+
 
       {/* MAIN CONTAINER */}
       <section className="py-6 md:py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
