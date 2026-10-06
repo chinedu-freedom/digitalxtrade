@@ -80,7 +80,6 @@ export default function PWAInstallPrompt() {
             <div className="min-w-0">
               <h4 className="font-extrabold text-sm text-white truncate flex items-center gap-1.5">
                 <span>Install DigitalXTrade App</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#0085d0] text-white">APP</span>
               </h4>
               <p className="text-xs text-slate-300 truncate mt-0.5">
                 Add to Home Screen for fast 1-tap mobile access
