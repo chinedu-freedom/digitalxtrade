@@ -1,6 +1,16 @@
 import axios from 'axios';
 
 export const normalizeApiBaseUrl = (rawUrl) => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+    if (!isLocal) {
+      const envUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+        return 'https://digitalxtrade.com/api';
+      }
+    }
+  }
   let url = (rawUrl || 'http://localhost:3001/api').trim().replace(/\/+$/, '');
   if (!url.endsWith('/api')) {
     url = `${url}/api`;
@@ -28,6 +38,7 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    config.baseURL = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('stakelab_token') || localStorage.getItem('digital_user_token');
       if (token) {
