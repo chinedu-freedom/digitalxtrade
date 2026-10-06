@@ -91,6 +91,24 @@ export default function HeaderNav({ isNested = false }) {
             </span>
           </Link>
 
+          {/* Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center gap-6 lg:gap-10">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`text-sm font-bold transition-colors ${
+                    isActive ? 'text-[#0085d0]' : 'text-slate-700 hover:text-[#0085d0]'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+
           {/* Header Right Action & Hamburger Menu */}
           <div className="flex items-center gap-3">
             {/* Desktop Action Buttons */}
@@ -132,7 +150,7 @@ export default function HeaderNav({ isNested = false }) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex items-center justify-center w-10 h-10 rounded-xl text-slate-800 hover:text-[#0085d0] hover:bg-slate-100 transition-all focus:outline-none cursor-pointer"
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl text-slate-800 hover:text-[#0085d0] hover:bg-slate-100 transition-all focus:outline-none cursor-pointer"
               aria-label="Open sidebar menu"
               title="Menu navigation"
             >
@@ -145,7 +163,7 @@ export default function HeaderNav({ isNested = false }) {
 
       {/* Slide-In Navigation Sidebar Drawer & Backdrop */}
       <div
-        className={`fixed inset-0 z-[100] transition-visibility duration-300 ${
+        className={`fixed inset-0 z-[100] md:hidden transition-visibility duration-300 ${
           mobileMenuOpen ? 'visible' : 'invisible pointer-events-none'
         }`}
       >
