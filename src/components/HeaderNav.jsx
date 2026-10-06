@@ -29,15 +29,21 @@ export default function HeaderNav({ isNested = false }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Prevent background scrolling when sidebar drawer is open
+  // Prevent background scrolling when sidebar drawer is open & notify floating widgets
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.setAttribute('data-mobile-menu-open', 'true');
+      window.dispatchEvent(new CustomEvent('mobile-menu-toggle', { detail: { open: true } }));
     } else {
       document.body.style.overflow = '';
+      document.body.removeAttribute('data-mobile-menu-open');
+      window.dispatchEvent(new CustomEvent('mobile-menu-toggle', { detail: { open: false } }));
     }
     return () => {
       document.body.style.overflow = '';
+      document.body.removeAttribute('data-mobile-menu-open');
+      window.dispatchEvent(new CustomEvent('mobile-menu-toggle', { detail: { open: false } }));
     };
   }, [mobileMenuOpen]);
 
@@ -139,7 +145,7 @@ export default function HeaderNav({ isNested = false }) {
 
       {/* Slide-In Navigation Sidebar Drawer & Backdrop */}
       <div
-        className={`fixed inset-0 z-50 transition-visibility duration-300 ${
+        className={`fixed inset-0 z-[100] transition-visibility duration-300 ${
           mobileMenuOpen ? 'visible' : 'invisible pointer-events-none'
         }`}
       >

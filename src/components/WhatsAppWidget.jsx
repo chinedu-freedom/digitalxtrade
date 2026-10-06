@@ -1,24 +1,35 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function WhatsAppWidget({ phoneNumber = '447345115732', message = 'Message us' }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
   const whatsappUrl = `https://wa.me/${cleanNumber}`;
 
+  useEffect(() => {
+    const handleMenuToggle = (e) => {
+      setMenuOpen(Boolean(e.detail?.open));
+    };
+    window.addEventListener('mobile-menu-toggle', handleMenuToggle);
+    return () => window.removeEventListener('mobile-menu-toggle', handleMenuToggle);
+  }, []);
+
+  if (menuOpen) return null;
+
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex items-center select-none font-sans">
+    <div id="whatsapp-widget" className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 flex items-center select-none font-sans">
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-3 transition-transform duration-300 hover:scale-105 focus:outline-none group"
+        className="flex items-center gap-2.5 sm:gap-3 transition-transform duration-300 hover:scale-105 focus:outline-none group"
         aria-label="Message us on WhatsApp"
       >
         {/* WhatsApp Green Circle Button with Official WhatsApp Icon */}
-        <div className="w-14 h-14 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 relative shrink-0">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 relative shrink-0">
           <svg
-            className="w-8 h-8 fill-current"
+            className="w-6 h-6 sm:w-8 sm:h-8 fill-current"
             viewBox="0 0 32 32"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -26,8 +37,8 @@ export default function WhatsAppWidget({ phoneNumber = '447345115732', message =
           </svg>
         </div>
 
-        {/* White Speech Bubble Pill with Tail */}
-        <div className="relative bg-white text-slate-900 text-sm font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-slate-100/80 flex items-center justify-center whitespace-nowrap">
+        {/* White Speech Bubble Pill (Hidden on Mobile, Visible on Desktop) */}
+        <div className="hidden sm:flex relative bg-white text-slate-900 text-sm font-semibold px-4 py-2.5 rounded-lg shadow-lg border border-slate-100/80 items-center justify-center whitespace-nowrap">
           {/* Triangular Tail pointing to icon */}
           <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-white" />
           <span>{message}</span>

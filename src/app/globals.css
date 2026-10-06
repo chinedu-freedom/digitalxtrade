@@ -72,5 +72,14 @@ input:-webkit-autofill:active {
     opacity: 0.95;
     transform: translateY(-1px);
   }
+
+  /* Completely hide floating support widgets when mobile drawer is open */
+  body[data-mobile-menu-open="true"] #whatsapp-widget {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
 }
+
 

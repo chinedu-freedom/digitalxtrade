@@ -14,14 +14,16 @@ export default function PremiumPricingSection() {
       .then(res => res.json())
       .then(data => {
         if (isMounted && data.success && Array.isArray(data.plans)) {
-          const targetPlans = data.plans.length > 4 ? data.plans.slice(-4) : data.plans;
+          const corePlans = data.plans.filter(p => !p.isPromo && p.name !== 'Spark');
+          const targetPlans = corePlans.length >= 4 ? corePlans.slice(0, 4) : data.plans.slice(-4);
           const mapped = targetPlans.map(p => {
             const minStr = `$${Number(p.minAmount).toFixed(0)}`;
-            const maxStr = p.maxAmount ? `$${Number(p.maxAmount).toFixed(0)}` : '∞';
+            const maxStr = (p.maxAmount && Number(p.maxAmount) > 0) ? `$${Number(p.maxAmount).toFixed(0)}` : '$0.00';
             const dur = `${p.durationDays || 30} DAYS`;
+            const rate = Number(p.dailyProfit || p.profitNumber || 0);
             return {
               title: p.name || p.title,
-              dailyRoi: `${p.dailyProfit || p.profitNumber}%${p.profitLabel ? ' ' + p.profitLabel.toUpperCase() : ' DAILY'} FOR ${dur}`,
+              dailyRoi: `${rate}% DAILY FOR ${dur}`,
               amount: `${minStr} - ${maxStr}`,
               returnType: 'Principal return',
               referral: 'Basic referral commission 5%',

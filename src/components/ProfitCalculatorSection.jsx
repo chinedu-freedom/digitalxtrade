@@ -17,7 +17,7 @@ export default function ProfitCalculatorSection() {
       .then(res => res.json())
       .then(data => {
         if (isMounted && data.success && Array.isArray(data.plans) && data.plans.length > 0) {
-          const targetPlans = data.plans.length > 4 ? data.plans.slice(-4) : data.plans;
+          const targetPlans = data.plans.filter(p => p.name !== 'Spark');
           const mapped = targetPlans.map(p => {
             const days = p.durationDays || 30;
             const rate = Number(p.dailyProfit || p.profitNumber || 0);
