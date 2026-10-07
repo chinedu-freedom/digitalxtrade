@@ -82,7 +82,23 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
-        <Script src="//code.tidio.co/oh2aiv1xpfjoqs6m4fuxcxcj6irlrnkr.js" strategy="lazyOnload" />
+        {/* Smartsupp Live Chat */}
+        <Script
+          id="smartsupp-chat"
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var _smartsupp = _smartsupp || {};
+              _smartsupp.key = '547a6975af52effd996b342feb2d269c752c252d';
+              window.smartsupp||(function(d) {
+                var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+                s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+                c.type='text/javascript';c.charset='utf-8';c.async=true;
+                c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+              })(document);
+            `,
+          }}
+        />
       </body>
     </html>
   );
