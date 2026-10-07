@@ -18,9 +18,9 @@ export default function WorldOfInvestmentsSection() {
       </div>
 
       {/* BLOCK 1: Invest with confidence */}
-      <div className="relative max-w-5xl mx-auto mb-24 min-h-[380px] flex items-center">
-        {/* Right Image Background */}
-        <div className="w-full md:w-3/4 ml-auto h-[340px] md:h-[400px] relative rounded-lg overflow-hidden shadow-md">
+      <div className="relative max-w-5xl mx-auto mb-16 md:mb-24 flex flex-col md:flex-row md:items-center min-h-0 md:min-h-[380px]">
+        {/* Top/Right Image Background */}
+        <div className="w-full md:w-3/4 md:ml-auto h-[280px] sm:h-[340px] md:h-[400px] relative rounded-lg overflow-hidden shadow-md">
           <Image
             src="/images/skyscrapers-architecture.jpg"
             alt="Modern Glass Skyscrapers"
@@ -29,8 +29,8 @@ export default function WorldOfInvestmentsSection() {
           />
         </div>
 
-        {/* Left Overlapping White Card */}
-        <div className="relative md:absolute left-0 top-1/2 md:-translate-y-1/2 w-full md:w-[460px] bg-white p-6 md:p-8 rounded-lg shadow-xl border border-slate-100 z-10 my-4 md:my-0">
+        {/* Bottom/Left Overlapping White Card */}
+        <div className="relative md:absolute left-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-[460px] bg-white p-6 md:p-8 rounded-lg shadow-xl border border-slate-100 z-10 -mt-10 sm:-mt-14 md:mt-0">
           <h3 className="text-2xl font-bold text-[#00529b] mb-4">
             Invest with confidence
           </h3>
@@ -60,9 +60,9 @@ export default function WorldOfInvestmentsSection() {
       </div>
 
       {/* BLOCK 2: Stocks & Shares ISA */}
-      <div className="relative max-w-5xl mx-auto mb-10 min-h-[380px] flex items-center">
-        {/* Left Image Background */}
-        <div className="w-full md:w-3/4 mr-auto h-[340px] md:h-[400px] relative rounded-lg overflow-hidden shadow-md">
+      <div className="relative max-w-5xl mx-auto mb-16 md:mb-10 flex flex-col md:flex-row md:items-center min-h-0 md:min-h-[380px]">
+        {/* Top/Left Image Background */}
+        <div className="w-full md:w-3/4 md:mr-auto h-[280px] sm:h-[340px] md:h-[400px] relative rounded-lg overflow-hidden shadow-md">
           <Image
             src="/images/thoughtful-trader.jpg"
             alt="Professional Investor with Tablet"
@@ -71,8 +71,8 @@ export default function WorldOfInvestmentsSection() {
           />
         </div>
 
-        {/* Right Overlapping White Card */}
-        <div className="relative md:absolute right-0 top-1/2 md:-translate-y-1/2 w-full md:w-[460px] bg-white p-6 md:p-8 rounded-lg shadow-xl border border-slate-100 z-10 my-4 md:my-0">
+        {/* Bottom/Right Overlapping White Card */}
+        <div className="relative md:absolute right-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-[460px] bg-white p-6 md:p-8 rounded-lg shadow-xl border border-slate-100 z-10 -mt-10 sm:-mt-14 md:mt-0">
           <h3 className="text-2xl font-bold text-[#00529b] mb-4 leading-tight">
             Get more with our Stock&Shares ISA
           </h3>
@@ -107,9 +107,9 @@ export default function WorldOfInvestmentsSection() {
       </div>
 
       {/* BLOCK 3: Multi-currency investment simplified */}
-      <div className="relative max-w-5xl mx-auto mb-16 min-h-[380px] flex items-center">
-        {/* Right Image Background */}
-        <div className="w-full md:w-3/4 ml-auto h-[340px] md:h-[400px] relative rounded-lg overflow-hidden shadow-md">
+      <div className="relative max-w-5xl mx-auto mb-16 flex flex-col md:flex-row md:items-center min-h-0 md:min-h-[380px]">
+        {/* Top/Right Image Background */}
+        <div className="w-full md:w-3/4 md:ml-auto h-[280px] sm:h-[340px] md:h-[400px] relative rounded-lg overflow-hidden shadow-md">
           <Image
             src="/images/multicurrency-card.jpg"
             alt="Multi-currency Debit Card"
@@ -118,8 +118,8 @@ export default function WorldOfInvestmentsSection() {
           />
         </div>
 
-        {/* Left Overlapping White Card */}
-        <div className="relative md:absolute left-0 top-1/2 md:-translate-y-1/2 w-full md:w-[460px] bg-white p-6 md:p-8 rounded-lg shadow-xl border border-slate-100 z-10 my-4 md:my-0">
+        {/* Bottom/Left Overlapping White Card */}
+        <div className="relative md:absolute left-0 md:top-1/2 md:-translate-y-1/2 w-full md:w-[460px] bg-white p-6 md:p-8 rounded-lg shadow-xl border border-slate-100 z-10 -mt-10 sm:-mt-14 md:mt-0">
           <h3 className="text-2xl font-bold text-[#00529b] mb-4 leading-tight">
             Multi-currency investment simplified
           </h3>
