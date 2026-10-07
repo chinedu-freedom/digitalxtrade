@@ -146,22 +146,6 @@ export default function HeaderNav({ isNested = false }) {
               )}
             </div>
 
-            {/* Mobile Quick Action Button (Shown on small screens next to hamburger) */}
-            {user ? (
-              <Link
-                href="/dashboard"
-                className="md:hidden bg-[#0085d0] hover:bg-[#0072ce] text-white px-3 py-1.5 rounded text-[11px] font-black tracking-wider uppercase shadow-xs transition-all whitespace-nowrap"
-              >
-                ACCOUNT
-              </Link>
-            ) : (
-              <Link
-                href="/register"
-                className="md:hidden bg-[#0085d0] hover:bg-[#0072ce] text-white px-3 py-1.5 rounded text-[11px] font-black tracking-wider uppercase shadow-xs transition-all whitespace-nowrap"
-              >
-                OPEN ACCOUNT
-              </Link>
-            )}
 
             {/* Hamburger Toggle Button (Shown on Mobile Only) */}
             <button
