@@ -31,6 +31,7 @@ export default function WithdrawFundsPage() {
   const [walletType, setWalletType] = useState('deposit');
   const [accountBalance, setAccountBalance] = useState(0.00);
   const [pendingWithdrawals, setPendingWithdrawals] = useState(0.00);
+  const [maxDailyLimit, setMaxDailyLimit] = useState(50000);
   const [selectedCurrencyId, setSelectedCurrencyId] = useState('bitcoin');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -105,6 +106,7 @@ export default function WithdrawFundsPage() {
         const d = res.data.data || res.data;
         if (d.accountBalance !== undefined) setAccountBalance(parseFloat(d.accountBalance));
         if (d.pendingWithdrawals !== undefined) setPendingWithdrawals(parseFloat(d.pendingWithdrawals));
+        if (d.maxDailyWithdraw !== undefined) setMaxDailyLimit(parseFloat(d.maxDailyWithdraw));
         if (d.currencies && Array.isArray(d.currencies)) {
           setCurrencies(d.currencies);
         } else if (res.data.user) {
@@ -232,6 +234,12 @@ export default function WithdrawFundsPage() {
                 <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
                 <span>Pending Withdrawals <strong>${pendingWithdrawals.toFixed(2)}</strong></span>
               </div>
+              {maxDailyLimit > 0 && (
+                <div className="flex items-center gap-1.5 pt-1">
+                  <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
+                  <span>Daily Withdrawal Limit: <strong className="text-amber-700">${maxDailyLimit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong></span>
+                </div>
+              )}
             </div>
 
             {/* TITLE */}
