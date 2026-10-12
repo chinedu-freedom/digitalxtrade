@@ -1,47 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function HeroSection() {
-  const tickerRef = useRef(null);
-
-  useEffect(() => {
-    if (!tickerRef.current) return;
-    tickerRef.current.innerHTML = '';
-
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
-    script.type = 'text/javascript';
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      symbols: [
-        { proName: 'FOREXCOM:NSXUSD', title: 'US 100 Cash CFD' },
-        { proName: 'FX_IDC:EURUSD', title: 'EUR to USD' },
-        { proName: 'BITSTAMP:BTCUSD', title: 'Bitcoin' },
-        { proName: 'BITSTAMP:ETHUSD', title: 'Ethereum' },
-        { proName: 'FOREXCOM:SPXUSD', title: 'S&P 500 Index' }
-      ],
-      showSymbolLogo: true,
-      isTransparent: true,
-      displayMode: 'adaptive',
-      colorTheme: 'dark',
-      locale: 'en'
-    });
-
-    const widgetBox = document.createElement('div');
-    widgetBox.className = 'tradingview-widget-container__widget';
-    tickerRef.current.appendChild(widgetBox);
-    tickerRef.current.appendChild(script);
-
-    return () => {
-      if (tickerRef.current) {
-        tickerRef.current.innerHTML = '';
-      }
-    };
-  }, []);
-
   return (
     <section className="relative w-full min-h-[calc(100vh-80px)] flex items-center bg-slate-900 overflow-hidden">
       {/* Background Executive Trader Image - Optimized for Mobile & Desktop */}
@@ -68,15 +31,8 @@ export default function HeroSection() {
             Discover a premium trading experience based on awarded platforms.
           </p>
 
-          {/* Floating Market Ticker Widget (Matches Image 1 layout) */}
-          <div className="w-full max-w-[340px] sm:max-w-md md:max-w-lg bg-[#111622]/95 backdrop-blur-sm border border-slate-700/80 rounded-xl overflow-hidden shadow-2xl p-1.5 my-3">
-            <div className="tradingview-widget-container" ref={tickerRef}>
-              <div className="tradingview-widget-container__widget"></div>
-            </div>
-          </div>
-
           {/* Desktop Call to Action Button */}
-          <div className="hidden md:block pt-2">
+          <div className="hidden md:block pt-4">
             <Link
               href="/register"
               className="inline-block bg-[#0085d0] hover:bg-[#0072ce] text-white font-extrabold px-14 py-3.5 rounded text-xs md:text-sm tracking-wider uppercase transition-colors shadow-lg text-center"
