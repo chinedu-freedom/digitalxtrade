@@ -23,12 +23,11 @@ import FloatingWidgets from '@/components/FloatingWidgets';
 import Footer from '@/components/Footer';
 import PageLoader from '@/components/PageLoader';
 import { useAuth } from '@/context/AuthContext';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import api from '@/lib/api';
 
 export default function WithdrawFundsPage() {
   const { user } = useAuth();
-  const [walletType, setWalletType] = useState('deposit');
+  const walletType = 'profit';
   const [accountBalance, setAccountBalance] = useState(0.00);
   const [pendingWithdrawals, setPendingWithdrawals] = useState(0.00);
   const [maxDailyLimit, setMaxDailyLimit] = useState(50000);
@@ -228,7 +227,7 @@ export default function WithdrawFundsPage() {
             <div className="space-y-1 text-sm text-slate-800 font-medium">
               <div className="flex items-center gap-1.5">
                 <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
-                <span>Account balance <strong>${accountBalance.toFixed(2)}</strong></span>
+                <span>Withdrawable Profit Balance: <strong>${accountBalance.toFixed(2)}</strong></span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
@@ -347,10 +346,10 @@ export default function WithdrawFundsPage() {
             {/* ELIGIBILITY STATUS MSG */}
             <div className="bg-slate-50 border border-slate-200 rounded p-3 text-xs sm:text-sm font-medium">
               {accountBalance <= 0 ? (
-                <p className="text-slate-700">You have no funds to withdraw.</p>
+                <p className="text-slate-700">You have no withdrawable profit earnings at this time.</p>
               ) : (
                 <p className="text-emerald-700 font-semibold">
-                  You have ${accountBalance.toFixed(2)} eligible for withdrawal.
+                  You have ${accountBalance.toFixed(2)} in profit earnings eligible for immediate withdrawal.
                 </p>
               )}
             </div>
@@ -358,43 +357,6 @@ export default function WithdrawFundsPage() {
             {/* WITHDRAWAL FORM */}
             <div className="pt-4 border-t border-slate-200">
               <form onSubmit={handleWithdraw} className="space-y-4">
-                  {/* Select Source Wallet (Deposit vs Profit Balance) */}
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Withdraw From (Source Wallet)
-                    </label>
-                    <Select value={walletType} onValueChange={(val) => setWalletType(val)}>
-                      <SelectTrigger className="w-full bg-white border border-slate-300 rounded-lg h-12 px-4 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-[#0085d0]">
-                        <SelectValue placeholder="Select Source Wallet" />
-                      </SelectTrigger>
-                      <SelectContent searchable={false} className="bg-white border border-slate-200 shadow-xl rounded-lg">
-                        <SelectItem 
-                          value="deposit" 
-                          label={`Deposit Balance ($${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)})`}
-                          className="py-2.5"
-                        >
-                          <div className="flex items-center justify-between w-full gap-4">
-                            <span className="font-bold">Deposit Balance</span>
-                            <span className={`font-extrabold ${walletType === 'deposit' ? 'text-white' : 'text-blue-600'}`}>
-                              ${parseFloat(user?.depositBalance || user?.deposit_balance || 0).toFixed(2)}
-                            </span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem 
-                          value="profit" 
-                          label={`Profit Balance ($${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)})`}
-                          className="py-2.5"
-                        >
-                          <div className="flex items-center justify-between w-full gap-4">
-                            <span className="font-bold">Profit Balance</span>
-                            <span className={`font-extrabold ${walletType === 'profit' ? 'text-white' : 'text-emerald-600'}`}>
-                              ${parseFloat(user?.profitBalance || user?.profit_balance || 0).toFixed(2)}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                     Withdrawal Amount ($ USD)
@@ -417,29 +379,13 @@ export default function WithdrawFundsPage() {
                   </span>
                 </div>
 
-                {/* DYNAMIC FEE & NET PAYOUT SUMMARY */}
+                {/* 0% PLATFORM FEE SUMMARY */}
                 {withdrawAmount && !isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
-                  <div className={`p-3.5 rounded text-xs border ${walletType === 'deposit' ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-900'}`}>
-                    {walletType === 'deposit' ? (
-                      <div className="space-y-1">
-                        <div className="flex justify-between font-bold">
-                          <span>Early Capital Withdrawal Fee (50%):</span>
-                          <span className="text-amber-700">-${(parseFloat(withdrawAmount) * 0.50).toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between font-extrabold text-sm border-t border-amber-200 pt-1 mt-1 text-slate-900">
-                          <span>Net Payout Amount:</span>
-                          <span className="text-emerald-600">${(parseFloat(withdrawAmount) * 0.50).toFixed(2)}</span>
-                        </div>
-                        <p className="text-[11px] text-amber-800 mt-1">
-                          ⚠️ Note: Capital withdrawals from Deposit Balance incur a 50% early withdrawal fee.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="flex justify-between items-center font-bold">
-                        <span>Withdrawal Fee (0%): <span className="text-emerald-600 font-normal">$0.00</span></span>
-                        <span>Net Payout: <span className="text-emerald-600 font-extrabold text-sm">${parseFloat(withdrawAmount).toFixed(2)}</span></span>
-                      </div>
-                    )}
+                  <div className="p-3.5 rounded text-xs border bg-blue-50 border-blue-200 text-blue-900">
+                    <div className="flex justify-between items-center font-bold">
+                      <span>Withdrawal Fee (0%): <span className="text-emerald-600 font-normal">$0.00</span></span>
+                      <span>Net Payout: <span className="text-emerald-600 font-extrabold text-sm">${parseFloat(withdrawAmount).toFixed(2)}</span></span>
+                    </div>
                   </div>
                 )}
 
@@ -507,10 +453,10 @@ export default function WithdrawFundsPage() {
               </div>
               <ul className="text-xs text-slate-300 space-y-2 list-disc pl-4 leading-relaxed">
                 <li>
-                  <strong className="text-white">Profit Balance Payouts:</strong> 0.00% fee (100% of requested earnings are paid out).
+                  <strong className="text-white">Profit Balance Payouts:</strong> Withdrawals are processed exclusively from your accrued profit earnings with 0.00% platform fee.
                 </li>
                 <li>
-                  <strong className="text-white">Deposit Balance Payouts:</strong> 50.00% early capital withdrawal fee applies to capital redemptions.
+                  <strong className="text-white">Active Capital (Deposit Balance):</strong> Deposits remain allocated to active trading strategies and continue generating daily yields.
                 </li>
                 <li>
                   <strong className="text-white">Processing Time:</strong> Automated processing dispatched within 1 - 60 minutes.
