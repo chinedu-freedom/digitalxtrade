@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
           />
           {children}
           <PWAInstallPrompt />
-          <WhatsAppWidget phoneNumber="447345115732" message="Message us" />
+          <WhatsAppWidget phoneNumber="447353852870" message="Message us" />
         </AuthProvider>
 
         {/* Register PWA Service Worker */}

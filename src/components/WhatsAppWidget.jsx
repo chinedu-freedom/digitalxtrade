@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-export default function WhatsAppWidget({ phoneNumber = '447345115732', message = 'Message us' }) {
+export default function WhatsAppWidget({ phoneNumber = '447353852870', message = 'Message us' }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
   const whatsappUrl = `https://wa.me/${cleanNumber}`;
