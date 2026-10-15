@@ -26,8 +26,8 @@ export default function PremiumPricingSection() {
               dailyRoi: `${rate}% DAILY FOR ${dur}`,
               amount: `${minStr} - ${maxStr}`,
               returnType: 'Principal return',
-              referral: 'Basic referral commission 5%',
-              representatives: 'Representatives 5%',
+              referral: '3-Tier referral commission (6% - 2.5% - 1%)',
+              representatives: 'Multi-tier rewards (2.5% & 1%)',
               withdrawals: 'Instant withdrawals'
             };
           });

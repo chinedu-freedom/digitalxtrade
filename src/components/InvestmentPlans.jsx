@@ -13,7 +13,7 @@ export default function InvestmentPlans() {
       minDeposit: '$100',
       maxDeposit: '$4,999',
       recommended: false,
-      features: ['24/7 Dedicated Support', 'Instant Profit Withdrawal', 'Standard Referral Bonus (5%)', 'Risk Protection Guard']
+      features: ['24/7 Dedicated Support', 'Instant Profit Withdrawal', '3-Tier Referral Bonus (6% - 2.5% - 1%)', 'Risk Protection Guard']
     },
     {
       name: 'Professional Trader',
@@ -22,7 +22,7 @@ export default function InvestmentPlans() {
       minDeposit: '$5,000',
       maxDeposit: '$19,999',
       recommended: true,
-      features: ['VIP Account Manager', 'Daily Direct Payouts', 'Tiered Referral Bonus (10%)', 'Guaranteed Principal Return', 'Automated Trading Signal']
+      features: ['VIP Account Manager', 'Daily Direct Payouts', '3-Tier Referral Bonus (6% - 2.5% - 1%)', 'Guaranteed Principal Return', 'Automated Trading Signal']
     },
     {
       name: 'Institutional VIP',

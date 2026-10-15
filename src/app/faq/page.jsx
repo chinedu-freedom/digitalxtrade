@@ -74,7 +74,7 @@ const faqItems = [
   },
   {
     q: 'How much referral commission do I receive?',
-    a: 'Our multi-tier affiliate program pays up to 10% instant referral commission on deposits made by your invited direct clients.'
+    a: 'Our 3-tier affiliate program pays instant referral commissions across 3 levels: 6.00% on Level 1 (direct clients), 2.50% on Level 2, and 1.00% on Level 3 deposits made by your network.'
   },
   {
     q: 'Do I need to invest if I want to start referring others and earn referral commissions?',
