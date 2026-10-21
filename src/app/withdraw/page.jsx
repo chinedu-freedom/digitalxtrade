@@ -33,6 +33,8 @@ export default function WithdrawFundsPage() {
   const [maxDailyLimit, setMaxDailyLimit] = useState(50000);
   const [selectedCurrencyId, setSelectedCurrencyId] = useState('bitcoin');
   const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [feePercent, setFeePercent] = useState(5);
+  const [withdrawNotice, setWithdrawNotice] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingCurrency, setEditingCurrency] = useState(null);
@@ -106,6 +108,9 @@ export default function WithdrawFundsPage() {
         if (d.accountBalance !== undefined) setAccountBalance(parseFloat(d.accountBalance));
         if (d.pendingWithdrawals !== undefined) setPendingWithdrawals(parseFloat(d.pendingWithdrawals));
         if (d.maxDailyWithdraw !== undefined) setMaxDailyLimit(parseFloat(d.maxDailyWithdraw));
+        if (d.payoutCharge !== undefined) setFeePercent(parseFloat(d.payoutCharge));
+        else if (d.feePercent !== undefined) setFeePercent(parseFloat(d.feePercent));
+        if (d.withdrawNotice) setWithdrawNotice(d.withdrawNotice);
         if (d.currencies && Array.isArray(d.currencies)) {
           setCurrencies(d.currencies);
         } else if (res.data.user) {
@@ -233,6 +238,10 @@ export default function WithdrawFundsPage() {
                 <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
                 <span>Pending Withdrawals <strong>${pendingWithdrawals.toFixed(2)}</strong></span>
               </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
+                <span>Withdrawal Processing Fee: <strong className="text-indigo-700">{feePercent}%</strong></span>
+              </div>
               {maxDailyLimit > 0 && (
                 <div className="flex items-center gap-1.5 pt-1">
                   <span className="text-[#0085d0] font-black text-base select-none">&gt;</span>
@@ -240,6 +249,13 @@ export default function WithdrawFundsPage() {
                 </div>
               )}
             </div>
+
+            {withdrawNotice && (
+              <div className="p-3 bg-blue-50/80 border border-blue-200/80 rounded-md text-xs text-blue-900 leading-relaxed">
+                <strong className="font-semibold">Notice: </strong>
+                <span>{withdrawNotice}</span>
+              </div>
+            )}
 
             {/* TITLE */}
             <div>
@@ -375,19 +391,34 @@ export default function WithdrawFundsPage() {
                     />
                   </div>
                   <span className="text-[11px] text-slate-500 mt-1 block">
-                    Selected asset: <strong className="text-slate-800">{selectedCurrency.name}</strong> (Destination: <span className="font-mono text-slate-700">{selectedCurrency.accountId}</span>)
+                    Selected asset: <strong className="text-slate-800">{selectedCurrency.name}</strong> (Min: ${selectedCurrency?.minWithdrawal !== undefined ? selectedCurrency.minWithdrawal.toFixed(2) : '10.00'} | Destination: <span className="font-mono text-slate-700">{selectedCurrency.accountId}</span>)
                   </span>
                 </div>
 
-                {/* 0% PLATFORM FEE SUMMARY */}
-                {withdrawAmount && !isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
-                  <div className="p-3.5 rounded text-xs border bg-blue-50 border-blue-200 text-blue-900">
-                    <div className="flex justify-between items-center font-bold">
-                      <span>Withdrawal Fee (0%): <span className="text-emerald-600 font-normal">$0.00</span></span>
-                      <span>Net Payout: <span className="text-emerald-600 font-extrabold text-sm">${parseFloat(withdrawAmount).toFixed(2)}</span></span>
+                {/* DYNAMIC PLATFORM FEE SUMMARY */}
+                {withdrawAmount && !isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (() => {
+                  const reqAmt = parseFloat(withdrawAmount);
+                  const feeAmt = parseFloat(((reqAmt * feePercent) / 100).toFixed(2));
+                  const netAmt = Math.max(0, reqAmt - feeAmt);
+                  return (
+                    <div className="p-3.5 rounded text-xs border bg-slate-50 border-slate-200 text-slate-800 space-y-2">
+                      <div className="flex justify-between items-center text-slate-600">
+                        <span>Withdrawal Amount:</span>
+                        <span className="font-semibold text-slate-900">${reqAmt.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-slate-600">
+                        <span>Withdrawal Fee ({feePercent}%):</span>
+                        <span className={feeAmt > 0 ? "text-amber-700 font-semibold" : "text-emerald-600 font-normal"}>
+                          ${feeAmt.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center font-bold border-t border-slate-200 pt-2 text-slate-900">
+                        <span>Net Payout (Sent to your wallet):</span>
+                        <span className="text-emerald-600 font-extrabold text-sm">${netAmt.toFixed(2)}</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                   <button
@@ -440,7 +471,7 @@ export default function WithdrawFundsPage() {
                   Fast & Automated Payouts
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed mt-0.5">
-                  Automated daemon relays broadcast crypto withdrawals direct to your personal wallet address with zero platform fees.
+                  Automated daemon relays broadcast crypto withdrawals direct to your personal wallet address with transparent fees.
                 </p>
               </div>
             </div>
@@ -453,7 +484,7 @@ export default function WithdrawFundsPage() {
               </div>
               <ul className="text-xs text-slate-300 space-y-2 list-disc pl-4 leading-relaxed">
                 <li>
-                  <strong className="text-white">Profit Balance Payouts:</strong> Withdrawals are processed exclusively from your accrued profit earnings with 0.00% platform fee.
+                  <strong className="text-white">Profit Balance Payouts:</strong> Withdrawals are processed exclusively from your accrued profit earnings with a {feePercent}% platform fee.
                 </li>
                 <li>
                   <strong className="text-white">Active Capital (Deposit Balance):</strong> Deposits remain allocated to active trading strategies and continue generating daily yields.
