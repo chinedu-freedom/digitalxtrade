@@ -79,9 +79,20 @@ export default function TransactionsPage() {
     }
 
     // Type filter
-    const isMinus = ['WITHDRAWAL', 'ADMIN_DEBIT', 'STAKE', 'DEBIT'].includes((t.type || '').toUpperCase());
-    if (typeFilter === 'Plus' && isMinus) return false;
-    if (typeFilter === 'Minus' && !isMinus) return false;
+    const rawType = (t.type || '').toUpperCase();
+    const isDeposit = rawType === 'DEPOSIT' || rawType === 'ADMIN_CREDIT' || (rawType.includes('DEPOSIT') && !rawType.includes('CANCEL')) || rawType.includes('CREDIT');
+    const isWithdrawal = rawType === 'WITHDRAWAL' || rawType === 'WITHDRAW' || rawType === 'ADMIN_DEBIT' || rawType.includes('WITHDRAW') || rawType === 'DEBIT';
+    const isYield = rawType === 'STAKE_PROFIT' || rawType === 'PROFIT' || rawType === 'YIELD';
+    const isStaking = rawType === 'STAKE' || rawType === 'STAKE_CANCEL' || rawType === 'CAPITAL_RETURN';
+    const isBonus = rawType === 'BONUS';
+    const isCommission = rawType.includes('COMMISSION') || rawType.includes('REFERRAL');
+
+    if (typeFilter === 'Plus' && !isDeposit) return false;
+    if (typeFilter === 'Minus' && !isWithdrawal) return false;
+    if (typeFilter === 'Yield' && !isYield) return false;
+    if (typeFilter === 'Staking' && !isStaking) return false;
+    if (typeFilter === 'Bonus' && !isBonus) return false;
+    if (typeFilter === 'Commission' && !isCommission) return false;
 
     // Date filter
     if (dateFilter !== 'All') {
@@ -181,7 +192,7 @@ export default function TransactionsPage() {
       statusText = 'Deposit credited';
       statusColor = 'bg-blue-50 text-blue-700 border-blue-200';
     } else if (rawType === 'ADMIN_DEBIT') {
-      statusText = 'Deposit debited';
+      statusText = 'Account debited';
       statusColor = 'bg-rose-50 text-rose-700 border-rose-200';
     } else if (rawType === 'DEPOSIT') {
       if (isCompleted) {
@@ -205,6 +216,18 @@ export default function TransactionsPage() {
         statusText = 'Rejected';
         statusColor = 'bg-rose-50 text-rose-700 border-rose-200';
       }
+    } else if (rawType === 'STAKE') {
+      statusText = isCompleted ? 'Invested' : 'Pending';
+      statusColor = isCompleted ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-amber-50 text-amber-700 border-amber-200';
+    } else if (rawType === 'STAKE_PROFIT' || rawType === 'PROFIT' || rawType === 'YIELD') {
+      statusText = 'Yield credited';
+      statusColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    } else if (rawType === 'STAKE_CANCEL' || rawType === 'CAPITAL_RETURN') {
+      statusText = 'Refunded';
+      statusColor = 'bg-cyan-50 text-cyan-700 border-cyan-200';
+    } else if (rawType === 'BONUS') {
+      statusText = 'Bonus claimed';
+      statusColor = 'bg-amber-50 text-amber-700 border-amber-200';
     } else {
       if (isCompleted) {
         statusText = 'Completed';
@@ -286,8 +309,12 @@ export default function TransactionsPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-white border-slate-200 text-slate-800 shadow-lg">
                   <SelectItem value="All">All Transactions</SelectItem>
-                  <SelectItem value="Plus">Plus (+)</SelectItem>
-                  <SelectItem value="Minus">Minus (-)</SelectItem>
+                  <SelectItem value="Plus">Plus (+) - Deposits</SelectItem>
+                  <SelectItem value="Minus">Minus (-) - Withdrawals</SelectItem>
+                  <SelectItem value="Yield">Yield / Profit Payouts</SelectItem>
+                  <SelectItem value="Staking">Staking Investments</SelectItem>
+                  <SelectItem value="Bonus">Bonuses & Rewards</SelectItem>
+                  <SelectItem value="Commission">Referral Commissions</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -431,7 +458,15 @@ export default function TransactionsPage() {
                         <div className="space-y-1">
                           <h3 className="text-base font-bold text-slate-800">No Transactions Found</h3>
                           <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-                            There are currently no transactions matching your criteria. When you make deposits, withdrawals, or earn staking rewards, your activity history will appear here.
+                            {typeFilter === 'Minus'
+                              ? 'There are currently no withdrawal transactions found on your account.'
+                              : typeFilter === 'Plus'
+                              ? 'There are currently no deposit transactions found matching your criteria.'
+                              : typeFilter === 'Yield'
+                              ? 'There are currently no yield payouts found on your account.'
+                              : typeFilter === 'Staking'
+                              ? 'There are currently no staking investment transactions found.'
+                              : 'There are currently no transactions matching your criteria. When you make deposits, withdrawals, or earn staking rewards, your activity history will appear here.'}
                           </p>
                         </div>
                       </div>
@@ -440,17 +475,32 @@ export default function TransactionsPage() {
                 ) : (
                   paginatedTransactions.map((trx) => {
                     const rawType = (trx.type || '').toUpperCase();
-                    const isPositive = !['WITHDRAWAL', 'ADMIN_DEBIT', 'STAKE', 'DEBIT'].includes(rawType);
+                    const isPositive = !['WITHDRAWAL', 'WITHDRAW', 'ADMIN_DEBIT', 'STAKE', 'DEBIT'].includes(rawType);
 
                     let prefixLabel = 'Earning';
-                    if (rawType.includes('DEPOSIT') || rawType.includes('CREDIT')) {
+                    let badgeBg = 'bg-emerald-100 text-emerald-800';
+
+                    if (rawType === 'DEPOSIT' || rawType === 'ADMIN_CREDIT' || (rawType.includes('DEPOSIT') && !rawType.includes('CANCEL')) || rawType.includes('CREDIT')) {
                       prefixLabel = 'Deposit';
-                    } else if (rawType.includes('WITHDRAW') || rawType.includes('DEBIT')) {
+                      badgeBg = 'bg-blue-100 text-blue-800';
+                    } else if (rawType === 'WITHDRAWAL' || rawType === 'WITHDRAW' || rawType === 'ADMIN_DEBIT' || rawType.includes('WITHDRAW') || rawType === 'DEBIT') {
                       prefixLabel = 'Withdrawal';
+                      badgeBg = 'bg-rose-100 text-rose-800';
+                    } else if (rawType === 'STAKE_PROFIT' || rawType === 'PROFIT' || rawType === 'YIELD') {
+                      prefixLabel = 'Yield';
+                      badgeBg = 'bg-emerald-100 text-emerald-800';
+                    } else if (rawType === 'STAKE_CANCEL' || rawType === 'CAPITAL_RETURN') {
+                      prefixLabel = 'Return';
+                      badgeBg = 'bg-cyan-100 text-cyan-800';
+                    } else if (rawType === 'STAKE') {
+                      prefixLabel = 'Staking';
+                      badgeBg = 'bg-purple-100 text-purple-800';
+                    } else if (rawType === 'BONUS') {
+                      prefixLabel = 'Bonus';
+                      badgeBg = 'bg-amber-100 text-amber-800';
                     } else if (rawType.includes('COMMISSION') || rawType.includes('REFERRAL')) {
                       prefixLabel = 'Commission';
-                    } else if (rawType.includes('STAKE')) {
-                      prefixLabel = 'Staking';
+                      badgeBg = 'bg-teal-100 text-teal-800';
                     }
 
                     const descText = trx.description || 'Investment Return Yield';
@@ -473,6 +523,15 @@ export default function TransactionsPage() {
                     } else if (fullText.includes('BTC') || fullText.includes('BITCOIN')) {
                       assetIcon = '₿';
                       assetBg = 'bg-[#f7931a] text-white';
+                    } else if (rawType === 'BONUS') {
+                      assetIcon = '★';
+                      assetBg = 'bg-amber-500 text-white';
+                    } else if (rawType === 'STAKE_PROFIT' || rawType === 'PROFIT' || rawType === 'YIELD') {
+                      assetIcon = '$';
+                      assetBg = 'bg-emerald-600 text-white';
+                    } else if (rawType === 'STAKE') {
+                      assetIcon = '⚡';
+                      assetBg = 'bg-purple-600 text-white';
                     }
 
                     const formattedAmount = `${isPositive ? '+' : '-'}$${parseFloat(trx.amount || 0).toFixed(2)}`;
@@ -484,9 +543,7 @@ export default function TransactionsPage() {
                         {/* Transaction Details & Description */}
                         <td className="py-3.5 px-4 space-y-1 align-top border-r border-slate-300">
                           <div className="flex items-center gap-2">
-                            <span className={`px-2 py-0.5 rounded text-[11px] font-extrabold uppercase tracking-wider ${
-                              isPositive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
-                            }`}>
+                            <span className={`px-2 py-0.5 rounded text-[11px] font-extrabold uppercase tracking-wider ${badgeBg}`}>
                               {prefixLabel}
                             </span>
                             <span className="font-mono text-xs text-slate-500">
