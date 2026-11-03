@@ -82,6 +82,11 @@ export default function PersonalInformationSettings() {
       });
 
       if (res.data && res.data.success) {
+        if (res.data.token) {
+          localStorage.setItem('stakelab_token', res.data.token);
+          const isLocal = typeof window !== 'undefined' && window.location.hostname.includes('localhost');
+          document.cookie = `stakelab_token=${res.data.token}; path=/; max-age=604800; SameSite=Lax${!isLocal ? '; domain=.everstake.cx; Secure' : ''}`;
+        }
         toast.success('Personal information updated successfully');
         if (fetchUser) fetchUser();
         setFormData((prev) => ({ ...prev, newPassword: '', retypePassword: '' }));
