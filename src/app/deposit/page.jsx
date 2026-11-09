@@ -90,21 +90,41 @@ export default function MakeDepositPage() {
   const [fetchedBalances, setFetchedBalances] = useState(null);
   const [dynamicPlans, setDynamicPlans] = useState([]);
 
+  // Sync accountBalance when user is loaded from AuthContext
+  useEffect(() => {
+    if (user) {
+      const totalUserBal = Math.max(
+        Number(user.balance || 0),
+        Number(user.profitBalance || user.profit_balance || 0) + Number(user.depositBalance || user.deposit_balance || 0)
+      );
+      if (totalUserBal > 0) {
+        setAccountBalance(totalUserBal);
+      }
+    }
+  }, [user]);
+
   // Fetch dynamic plans & deposit wallets from backend
   useEffect(() => {
     let isMounted = true;
     const fetchDepositPlans = async () => {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const token = typeof window !== 'undefined'
+          ? (localStorage.getItem('stakelab_token') || localStorage.getItem('digital_user_token') || localStorage.getItem('token'))
+          : null;
         const response = await fetch(getApiUrl('/deposit/plans'), {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         if (response.ok) {
           const data = await response.json();
           if (isMounted && data.success) {
-            if (data.accountBalance !== undefined) {
-              setAccountBalance(data.accountBalance);
-            }
+            const fetchedAccBal = Number(data.accountBalance || 0);
+            const fallbackUserBal = Math.max(
+              Number(user?.balance || 0),
+              Number(user?.profitBalance || user?.profit_balance || 0) + Number(user?.depositBalance || user?.deposit_balance || 0)
+            );
+            const finalAccBal = fetchedAccBal > 0 ? fetchedAccBal : fallbackUserBal;
+            setAccountBalance(finalAccBal);
+
             if (data.userBalances) {
               setFetchedBalances(data.userBalances);
             }
@@ -197,6 +217,12 @@ export default function MakeDepositPage() {
   }, [depositInvoice, paymentConfirmed]);
 
   // Active processors merged with backend company wallets and distinct crypto balances
+  const effectiveTotal = Math.max(
+    accountBalance,
+    Number(user?.balance ?? 0),
+    Number(user?.profitBalance ?? user?.profit_balance ?? 0) + Number(user?.depositBalance ?? user?.deposit_balance ?? 0)
+  );
+
   const activeProcessors = processors.map(proc => {
     let procBal = 0;
     if (fetchedBalances && fetchedBalances[proc.id] !== undefined) {
@@ -206,12 +232,15 @@ export default function MakeDepositPage() {
       else if (proc.id === 'usdt_trc20') procBal = Number(user?.usdtTrc20Balance ?? 0);
       else if (proc.id === 'usdt_bep20') procBal = Number(user?.usdtBep20Balance ?? 0);
       else if (proc.id === 'litecoin') procBal = Number(user?.ltcBalance ?? 0);
-      else procBal = Number(user?.balance ?? accountBalance ?? 0);
+      else procBal = effectiveTotal;
+    }
 
-      if (procBal === 0 && accountBalance > 0 && proc.id === 'usdt_trc20') {
-        const totalCrypto = Number(user?.btcBalance ?? 0) + Number(user?.usdtTrc20Balance ?? 0) + Number(user?.usdtBep20Balance ?? 0) + Number(user?.ltcBalance ?? 0);
-        if (totalCrypto === 0) procBal = accountBalance;
-      }
+    if (procBal === 0 && effectiveTotal > 0 && proc.id === 'usdt_trc20') {
+      const totalCrypto = Number(fetchedBalances?.bitcoin ?? user?.btcBalance ?? 0) +
+                          Number(fetchedBalances?.usdt_trc20 ?? user?.usdtTrc20Balance ?? 0) +
+                          Number(fetchedBalances?.usdt_bep20 ?? user?.usdtBep20Balance ?? 0) +
+                          Number(fetchedBalances?.litecoin ?? user?.ltcBalance ?? 0);
+      if (totalCrypto === 0) procBal = effectiveTotal;
     }
 
     if (fetchedWallets && fetchedWallets[proc.id]) {
@@ -284,19 +313,24 @@ export default function MakeDepositPage() {
     }
 
     const specificBal = Number(selectedProcessor?.balance ?? 0);
-    if (paymentType === 'balance' && amountNum > specificBal) {
-      toast.error(`Insufficient ${selectedProcessor.name.replace(':', '')} balance ($${specificBal.toFixed(2)}). Please select a currency with sufficient funds (e.g. Litecoin) or choose Topup.`);
+    const availableFunds = Math.max(specificBal, effectiveTotal);
+    if (paymentType === 'balance' && amountNum > availableFunds) {
+      toast.error(`Insufficient balance ($${availableFunds.toFixed(2)}). You requested $${amountNum.toFixed(2)}. Please choose Topup or select a currency with sufficient funds.`);
       return;
     }
 
     setIsProcessingSpend(true);
 
     try {
+      const token = typeof window !== 'undefined'
+        ? (localStorage.getItem('stakelab_token') || localStorage.getItem('digital_user_token') || localStorage.getItem('token'))
+        : null;
+
       const response = await fetch(getApiUrl('/deposit'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(typeof window !== 'undefined' && localStorage.getItem('stakelab_token') ? { 'Authorization': `Bearer ${localStorage.getItem('stakelab_token')}` } : {})
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
           planId: selectedPlan.id,
@@ -332,7 +366,7 @@ export default function MakeDepositPage() {
       if (data.trackId) orderData.trackId = data.trackId;
 
       if (paymentType === 'balance') {
-        const remaining = data.newBalance !== undefined ? data.newBalance : Math.max(0, specificBal - amountNum);
+        const remaining = data.newBalance !== undefined ? data.newBalance : Math.max(0, availableFunds - amountNum);
         setAccountBalance(remaining);
         if (fetchUser) fetchUser();
         else if (refreshUser) refreshUser();
