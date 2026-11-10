@@ -28,7 +28,7 @@ import PageLoader from '@/components/PageLoader';
 
 
 export default function MakeDepositPage() {
-  const { user, fetchUser, refreshUser } = useAuth();
+  const { user, fetchUser, refreshUser, setUser } = useAuth();
 
   // Payment processing options with user manual deposit addresses & exchange icons
   const processors = [
@@ -366,6 +366,7 @@ export default function MakeDepositPage() {
       if (data.trackId) orderData.trackId = data.trackId;
 
       if (paymentType === 'balance') {
+        if (data.user && setUser) setUser(prev => ({ ...prev, ...data.user }));
         const remaining = data.newBalance !== undefined ? data.newBalance : Math.max(0, availableFunds - amountNum);
         setAccountBalance(remaining);
         if (fetchUser) fetchUser();

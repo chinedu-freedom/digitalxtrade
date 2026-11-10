@@ -33,7 +33,10 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams ? searchParams.get('tab') : null;
-  const { user, loading } = useAuth();
+  const { user, loading, fetchUser, setUser } = useAuth();
+  useEffect(() => {
+    if (fetchUser) fetchUser();
+  }, []);
   const [activeTab, setActiveTab] = useState(tabParam || 'ACCOUNT');
   const [lastAccessTime, setLastAccessTime] = useState('');
   const [origin, setOrigin] = useState('https://digitalxtrade.com');
@@ -89,6 +92,9 @@ function DashboardContent() {
       .then((res) => {
         const resData = res.data;
         if (resData && resData.success && resData.data) {
+          if (resData.user && setUser) {
+            setUser(prev => ({ ...prev, ...resData.user }));
+          }
           setDashboardData({
             earnedTotal: resData.data.earnedTotal || 0.00,
             totalDeposit: resData.data.totalDeposit || 0.00,
